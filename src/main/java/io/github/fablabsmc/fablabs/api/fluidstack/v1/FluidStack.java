@@ -8,6 +8,7 @@ import net.minecraft.util.registry.Registry;
 
 import net.fabricmc.fabric.api.util.NbtType;
 
+//TODO: name not final, will likely become FluidVolume before PR
 public final class FluidStack {
 	public static final FluidStack EMPTY = new FluidStack((Fluid) null);
 
