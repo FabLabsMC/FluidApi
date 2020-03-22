@@ -2,16 +2,14 @@ package io.github.fablabsmc.fablabs.api.fluidstack.v1;
 
 import static com.google.common.math.IntMath.gcd;
 
-import java.util.HashMap;
 import java.util.Objects;
-import java.util.Optional;
+import java.util.stream.IntStream;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 
 import net.minecraft.util.DynamicSerializable;
-import net.minecraft.util.Util;
 
 public final class Fraction extends Number implements Comparable<Fraction>, DynamicSerializable {
 	public static final Fraction ZERO = new Fraction(0, 1);
@@ -239,20 +237,21 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 	}
 
 	public static <T> Fraction deserialize(Dynamic<T> dynamic) {
-		return dynamic.getMapValues().map(map -> {
-			int numerator = Optional.ofNullable(map.get(dynamic.createString("Numerator")))
-					.map(v -> v.asInt(0)).orElse(0);
-			int denominator = Optional.ofNullable(map.get(dynamic.createString("Denominator")))
-					.map(v -> v.asInt(1)).orElse(1);
-			return Fraction.of(numerator, denominator);
-		}).orElse(Fraction.ZERO);
+		int[] arr = dynamic.asIntStream().toArray();
+
+		if (arr.length == 0) {
+			return ZERO;
+		}
+
+		if (arr.length == 1) {
+			return ofWhole(arr[0]);
+		}
+
+		return of(arr[0], arr[1]);
 	}
 
 	@Override
 	public <T> T serialize(DynamicOps<T> ops) {
-		return ops.createMap(Util.make(new HashMap<>(), map -> {
-			map.put(ops.createString("Numerator"), ops.createInt(numerator));
-			map.put(ops.createString("Denominator"), ops.createInt(denominator));
-		}));
+		return ops.createIntList(IntStream.of(numerator, denominator));
 	}
 }
