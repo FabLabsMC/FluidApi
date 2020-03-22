@@ -10,7 +10,7 @@ import net.fabricmc.fabric.api.util.NbtType;
 
 //TODO: name not final, will likely become FluidVolume before PR
 public final class FluidStack {
-	public static final FluidStack EMPTY = new FluidStack((Fluid) null);
+	public static final FluidStack EMPTY = new FluidStack(Fluids.EMPTY);
 
 	private Fluid fluid;
 	private Fraction amount;
@@ -62,11 +62,11 @@ public final class FluidStack {
 	}
 
 	public void increment(Fraction incrementBy) {
-		amount = amount.add(incrementBy).simplify();
+		amount = amount.add(incrementBy);
 	}
 
 	public void decrement(Fraction decrementBy) {
-		amount = amount.subtract(decrementBy).simplify();
+		amount = amount.subtract(decrementBy);
 		if (amount.isNegative()) amount = Fraction.ZERO;
 	}
 
