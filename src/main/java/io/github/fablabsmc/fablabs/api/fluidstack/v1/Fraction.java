@@ -1,40 +1,67 @@
 package io.github.fablabsmc.fablabs.api.fluidstack.v1;
 
+import static com.google.common.math.IntMath.gcd;
+
+import java.util.HashMap;
 import java.util.Objects;
+import java.util.Optional;
+
+import com.google.common.annotations.VisibleForTesting;
+import com.mojang.datafixers.Dynamic;
+import com.mojang.datafixers.types.DynamicOps;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.DynamicSerializable;
+import net.minecraft.util.Util;
 
-public final class Fraction {
-	public static final Fraction ZERO = ofWhole(0);
-	public static final Fraction ONE = ofWhole(1);
+public final class Fraction extends Number implements Comparable<Fraction>, DynamicSerializable {
+	public static final Fraction ZERO = new Fraction(0, 1);
+	public static final Fraction ONE = new Fraction(1, 1);
 
 	private final int numerator;
-	private final int denominator;
+	private final /*Positive*/ int denominator;
 
+	// should be only called if denom is positive and num & denom are coprime
 	private Fraction(int numerator, int denominator) {
+		assert denominator > 0 : "invalid denominator";
+		assert gcd(Math.abs(numerator), denominator) == 1 : "not simplified";
 		this.numerator = numerator;
 		this.denominator = denominator;
 	}
 
 	public static Fraction of(int numerator, int denominator) {
-		return new Fraction(numerator, denominator);
+		if (denominator == 0) throw new ArithmeticException("Zero denominator");
+		return denominator < 0 ? ofValidDenominator(-numerator, denominator) : ofValidDenominator(numerator, denominator);
+	}
+
+	// should be only called if denom is positive
+	@VisibleForTesting
+	static Fraction ofValidDenominator(int numerator, int denominator) {
+		if (numerator == 0) return ZERO;
+		if (numerator == denominator) return ONE;
+
+		int gcd = gcd(Math.abs(numerator), denominator);
+
+		return new Fraction(numerator / gcd, denominator / gcd);
 	}
 
 	//TODO: What shortcuts should we have, and how should we name them? This is in a Minecraft context, after all.
 	public static Fraction ofWhole(int numerator) {
+		if (numerator == 0) return ZERO;
+		if (numerator == 1) return ONE;
 		return new Fraction(numerator, 1);
 	}
 
 	public static Fraction ofThirds(int numerator) {
-		return new Fraction(numerator, 3);
+		return ofValidDenominator(numerator, 3);
 	}
 
 	public static Fraction ofNinths(int numerator) {
-		return new Fraction(numerator, 9);
+		return ofValidDenominator(numerator, 9);
 	}
 
 	public static Fraction ofThousandths(int numerator) {
-		return new Fraction(numerator, 1000);
+		return ofValidDenominator(numerator, 1000);
 	}
 
 	public int getNumerator() {
@@ -57,30 +84,47 @@ public final class Fraction {
 		return Integer.signum(numerator);
 	}
 
-	public double toDouble() {
-		return (double) numerator / (double) denominator;
+	@Override
+	public double doubleValue() {
+		return ((double) numerator) / denominator;
 	}
 
-	public Fraction inverse() {
-		return of(denominator, numerator);
+	public Fraction negate() {
+		// don't need to simplify
+		return new Fraction(-numerator, denominator);
+	}
+
+	public Fraction inverse() throws ArithmeticException {
+		// don't need to simplify
+		switch (signum()) {
+		case 1:
+			return new Fraction(denominator, numerator);
+		case -1:
+			return new Fraction(-denominator, -numerator);
+		default:
+			throw new ArithmeticException("Cannot invert zero fraction!");
+		}
 	}
 
 	public Fraction add(Fraction other) {
-		int commonMultiple = this.denominator * other.denominator;
-		int leftNumerator = this.numerator * other.denominator;
-		int rightNumerator = other.numerator * this.denominator;
-		return of(leftNumerator + rightNumerator, commonMultiple);
+		int commonMultiple = lcm(this.denominator, other.denominator);
+		int leftNumerator = commonMultiple / this.denominator * this.numerator;
+		int rightNumerator = commonMultiple / other.denominator * other.numerator;
+		return ofValidDenominator(leftNumerator + rightNumerator, commonMultiple);
 	}
 
 	public Fraction subtract(Fraction other) {
-		int commonMultiple = this.denominator * other.denominator;
-		int leftNumerator = this.numerator * other.denominator;
-		int rightNumerator = other.numerator * this.denominator;
-		return of(leftNumerator - rightNumerator, commonMultiple);
+		int commonMultiple = lcm(this.denominator, other.denominator);
+		int leftNumerator = commonMultiple / this.denominator * this.numerator;
+		int rightNumerator = commonMultiple / other.denominator * other.numerator;
+		return ofValidDenominator(leftNumerator - rightNumerator, commonMultiple);
 	}
 
 	public Fraction multiply(Fraction other) {
-		return of(this.numerator * other.numerator, this.denominator * other.denominator);
+		int gcd1 = gcd(Math.abs(this.numerator), other.denominator);
+		int gcd2 = gcd(this.denominator, Math.abs(other.numerator));
+		// guaranteed simplified
+		return new Fraction(signum() * other.signum() * (this.numerator / gcd1) * (other.numerator / gcd2), (this.denominator / gcd2) * (other.denominator / gcd1));
 	}
 
 	public Fraction divide(Fraction other) {
@@ -88,13 +132,21 @@ public final class Fraction {
 	}
 
 	public static Fraction add(Fraction... addends) {
-		Fraction ret = ZERO;
+		final int len;
+		if ((len = addends.length) == 0) return ZERO;
+		Fraction first = addends[0];
 
-		for (Fraction addend : addends) {
-			ret = ret.add(addend);
+		int denominator = first.denominator;
+		for (int i = 1; i < len; i++) {
+			denominator = lcm(denominator, addends[i].denominator);
 		}
 
-		return ret.simplify();
+		int numerator = 0;
+		for (Fraction addend : addends) {
+			numerator += denominator / addend.denominator * addend.numerator;
+		}
+
+		return ofValidDenominator(numerator, denominator);
 	}
 
 	public static Fraction subtract(Fraction minuend, Fraction subtrahend) {
@@ -102,54 +154,45 @@ public final class Fraction {
 	}
 
 	public static Fraction multiply(Fraction... factors) {
-		Fraction ret = ONE;
+		final int len;
+		if ((len = factors.length) == 0) return ONE;
 
-		for (Fraction factor : factors) {
-			ret = ret.multiply(factor);
+		Fraction first = factors[0];
+		int signum;
+		if ((signum = first.signum()) == 0) return ZERO; // shortcut
+		int numerator = Math.abs(first.numerator);
+		int denominator = first.denominator;
+
+		for (int i = 1; i < len; i++) {
+			Fraction factor = factors[i];
+			signum *= factor.signum();
+			if (signum == 0) return ZERO; // shortcut
+			int factorDenom = factor.denominator;
+			int factorNum = Math.abs(factor.numerator);
+			int gcd1 = gcd(numerator, factorDenom);
+			int gcd2 = gcd(denominator, factorNum);
+			numerator = (numerator / gcd1) * (factorNum / gcd2);
+			denominator = (denominator / gcd2) * (factorDenom / gcd1);
+			assert gcd(numerator, denominator) == 1;
 		}
 
-		return ret.simplify();
+		// should be simplified by here
+		return new Fraction(numerator * signum, denominator);
 	}
 
 	public static Fraction divide(Fraction dividend, Fraction divisor) {
 		return dividend.divide(divisor);
 	}
 
-	public Fraction simplify() {
-		if (numerator == 0) return ZERO;
-		if (numerator == denominator) return ONE;
-		int gcd;
-
-		if (numerator > denominator) {
-			gcd = gcd(numerator, denominator);
-		} else {
-			gcd = gcd(denominator, numerator);
-		}
-
-		return of(numerator / gcd, denominator / gcd);
+	private static int lcm(int a, int b) {
+		return a / gcd(a, b) * b; // divide first to prevent overflow
 	}
 
-	private int gcd(int larger, int smaller) {
-		int currentLarger = larger;
-		int currentSmaller = smaller;
-
-		while (currentSmaller > 0) {
-			int remainder = currentLarger % currentSmaller;
-			currentLarger = currentSmaller;
-			currentSmaller = remainder;
-		}
-
-		return currentLarger;
-	}
-
-	public static boolean areEqual(Fraction left, Fraction right) {
-		return left.simplify().equals(right.simplify());
-	}
-
+	@Override
 	public int compareTo(Fraction other) {
-		if (areEqual(this, other)) return 0;
 		int leftNum = this.numerator * other.denominator;
 		int rightNum = other.numerator * this.denominator;
+		// todo integer overflow
 		return Integer.compare(leftNum, rightNum);
 	}
 
@@ -159,6 +202,21 @@ public final class Fraction {
 
 	public static Fraction min(Fraction left, Fraction right) {
 		return left.compareTo(right) < 0 ? left : right;
+	}
+
+	@Override
+	public int intValue() {
+		return numerator / denominator;
+	}
+
+	@Override
+	public long longValue() {
+		return intValue();
+	}
+
+	@Override
+	public float floatValue() {
+		return (float) doubleValue();
 	}
 
 	@Override
@@ -176,10 +234,7 @@ public final class Fraction {
 
 	@Override
 	public String toString() {
-		return "Fraction{"
-				+ "numerator=" + numerator
-				+ ", denominator=" + denominator
-				+ '}';
+		return numerator + "/" + denominator;
 	}
 
 	//TODO: NBT serialization in here or in another class?
@@ -191,5 +246,23 @@ public final class Fraction {
 		tag.putInt("Numerator", numerator);
 		tag.putInt("Denominator", denominator);
 		return tag;
+	}
+
+	public static <T> Fraction deserialize(Dynamic<?> dynamic) {
+		return dynamic.getMapValues().map(map -> {
+			int numerator = Optional.ofNullable(map.get(dynamic.createString("Numerator")))
+					.map(v -> v.asInt(0)).orElse(0);
+			int denominator = Optional.ofNullable(map.get(dynamic.createString("Denominator")))
+					.map(v -> v.asInt(1)).orElse(1);
+			return Fraction.of(numerator, denominator);
+		}).orElse(Fraction.ZERO);
+	}
+
+	@Override
+	public <T> T serialize(DynamicOps<T> ops) {
+		return ops.createMap(Util.make(new HashMap<>(), map -> {
+			map.put(ops.createString("Numerator"), ops.createInt(numerator));
+			map.put(ops.createString("Denominator"), ops.createInt(denominator));
+		}));
 	}
 }

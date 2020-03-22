@@ -11,11 +11,6 @@
     "sources": "https://github.com/${repo}"
   },
   "environment": "*",
-  "entrypoints": {
-    "main": [
-      "io.github.fablabsmc.fablabs.api.fluidstack.v1.FluidStacks"
-    ]
-  },
   "depends": {
     "fabricloader": ">=0.4.0"
   },
