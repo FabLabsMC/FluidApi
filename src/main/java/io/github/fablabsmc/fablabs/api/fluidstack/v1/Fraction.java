@@ -10,7 +10,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.DynamicSerializable;
 import net.minecraft.util.Util;
 
@@ -23,7 +22,7 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 
 	// should be only called if denom is positive and num & denom are coprime
 	private Fraction(int numerator, int denominator) {
-		assert denominator > 0 : "invalid denominator";
+		assert denominator > 0 : "invalid denominator (must be positive)";
 		assert gcd(Math.abs(numerator), denominator) == 1 : "not simplified";
 		this.numerator = numerator;
 		this.denominator = denominator;
@@ -137,11 +136,13 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 		Fraction first = addends[0];
 
 		int denominator = first.denominator;
+
 		for (int i = 1; i < len; i++) {
 			denominator = lcm(denominator, addends[i].denominator);
 		}
 
 		int numerator = 0;
+
 		for (Fraction addend : addends) {
 			numerator += denominator / addend.denominator * addend.numerator;
 		}
@@ -237,18 +238,7 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 		return numerator + "/" + denominator;
 	}
 
-	//TODO: NBT serialization in here or in another class?
-	public static Fraction fromTag(CompoundTag tag) {
-		return Fraction.of(tag.getInt("Numerator"), tag.getInt("Denominator"));
-	}
-
-	public CompoundTag toTag(CompoundTag tag) {
-		tag.putInt("Numerator", numerator);
-		tag.putInt("Denominator", denominator);
-		return tag;
-	}
-
-	public static <T> Fraction deserialize(Dynamic<?> dynamic) {
+	public static <T> Fraction deserialize(Dynamic<T> dynamic) {
 		return dynamic.getMapValues().map(map -> {
 			int numerator = Optional.ofNullable(map.get(dynamic.createString("Numerator")))
 					.map(v -> v.asInt(0)).orElse(0);

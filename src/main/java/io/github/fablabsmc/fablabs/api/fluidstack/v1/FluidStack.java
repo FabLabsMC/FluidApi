@@ -1,7 +1,11 @@
 package io.github.fablabsmc.fablabs.api.fluidstack.v1;
 
+import com.mojang.datafixers.Dynamic;
+
+import net.minecraft.datafixer.NbtOps;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -30,7 +34,7 @@ public final class FluidStack {
 
 	private FluidStack(CompoundTag tag) {
 		fluid = Registry.FLUID.get(new Identifier(tag.getString("id")));
-		amount = Fraction.fromTag(tag.getCompound("Amount"));
+		amount = Fraction.deserialize(new Dynamic<>(NbtOps.INSTANCE, tag.getCompound("Amount")));
 
 		if (tag.contains("tag", NbtType.COMPOUND)) {
 			this.tag = tag.getCompound("tag");
@@ -96,8 +100,21 @@ public final class FluidStack {
 		this.tag = tag;
 	}
 
+	public FluidStack copy() {
+		if (this.isEmpty()) return FluidStack.EMPTY;
+		FluidStack stack = new FluidStack(this.fluid, this.amount);
+		if (this.hasTag()) stack.setTag(this.getTag());
+		return stack;
+	}
+
+	public static FluidStack fromTag(CompoundTag tag) {
+		return new FluidStack(tag);
+	}
+
 	public CompoundTag toTag(CompoundTag tag) {
 		tag.putString("id", Registry.FLUID.getId(getFluid()).toString());
+
+		tag.put("Amount", amount.serialize(NbtOps.INSTANCE));
 
 		if (this.tag != null) {
 			tag.put("tag", this.tag.copy());
