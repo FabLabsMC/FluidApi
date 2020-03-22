@@ -5,7 +5,7 @@
 
   "name": "FabLabs ${libname} version ${libver}",
   "icon": "assets/blueprint/icon.png",
-  "description": "Template for starting out FabLabs drafts",
+  "description": "Fluid stack reference implementation for Fabric API",
   "license": "MIT",
   "contact": {
     "sources": "https://github.com/${repo}"
@@ -13,12 +13,9 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "io.github.fablabsmc.fablabs.blueprint.v1.Blueprint"
+      "io.github.fablabsmc.fablabs.api.fluidstack.v1.FluidStacks"
     ]
   },
-  "mixins": [
-    "mixins.${libname}.json"
-  ],
   "depends": {
     "fabricloader": ">=0.4.0"
   },
