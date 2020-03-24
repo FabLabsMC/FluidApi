@@ -85,10 +85,10 @@ public final class FluidVolume {
 		return left.getFluid() == right.getFluid();
 	}
 
-//	public static boolean areCombinable(FluidVolume left, FluidVolume right) {
-//		if (left == right) return true;
-//		if (left.isEmpty() && right.isEmpty()) return true;
-//	}
+	//public static boolean areCombinable(FluidVolume left, FluidVolume right) {
+	//	if (left == right) return true;
+	//	if (left.isEmpty() && right.isEmpty()) return true;
+	//}
 
 	private void updateEmptyState() {
 		empty = isEmpty();
