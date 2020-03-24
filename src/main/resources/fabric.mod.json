@@ -4,7 +4,7 @@
   "version": "${version}",
 
   "name": "FabLabs ${libname} version ${libver}",
-  "icon": "assets/blueprint/icon.png",
+  "icon": "assets/${id}/icon.png",
   "description": "Fluid stack reference implementation for Fabric API",
   "license": "MIT",
   "contact": {

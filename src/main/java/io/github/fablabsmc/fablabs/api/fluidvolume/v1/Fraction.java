@@ -1,4 +1,4 @@
-package io.github.fablabsmc.fablabs.api.fluidstack.v1;
+package io.github.fablabsmc.fablabs.api.fluidvolume.v1;
 
 import static com.google.common.math.IntMath.gcd;
 

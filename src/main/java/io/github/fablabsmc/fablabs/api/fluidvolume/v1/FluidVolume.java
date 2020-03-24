@@ -1,4 +1,4 @@
-package io.github.fablabsmc.fablabs.api.fluidstack.v1;
+package io.github.fablabsmc.fablabs.api.fluidvolume.v1;
 
 import com.mojang.datafixers.Dynamic;
 
@@ -11,9 +11,8 @@ import net.minecraft.util.registry.Registry;
 
 import net.fabricmc.fabric.api.util.NbtType;
 
-//TODO: name not final, will likely become FluidVolume before PR
-public final class FluidStack {
-	public static final FluidStack EMPTY = new FluidStack(Fluids.EMPTY);
+public final class FluidVolume {
+	public static final FluidVolume EMPTY = new FluidVolume(Fluids.EMPTY);
 
 	private Fluid fluid;
 	private Fraction amount;
@@ -21,22 +20,22 @@ public final class FluidStack {
 
 	private boolean empty;
 
-	public FluidStack(Fluid fluid) {
+	public FluidVolume(Fluid fluid) {
 		this(fluid, Fraction.ONE);
 	}
 
-	public FluidStack(Fluid fluid, Fraction amount) {
+	public FluidVolume(Fluid fluid, Fraction amount) {
 		this.fluid = fluid;
 		this.amount = amount;
 		this.updateEmptyState();
 	}
 
-	private FluidStack(CompoundTag tag) {
-		fluid = Registry.FLUID.get(new Identifier(tag.getString("id")));
+	private FluidVolume(CompoundTag tag) {
+		fluid = Registry.FLUID.get(new Identifier(tag.getString("Id")));
 		amount = Fraction.deserialize(new Dynamic<>(NbtOps.INSTANCE, tag.getCompound("Amount")));
 
-		if (tag.contains("tag", NbtType.COMPOUND)) {
-			this.tag = tag.getCompound("tag");
+		if (tag.contains("Tag", NbtType.COMPOUND)) {
+			this.tag = tag.getCompound("Tag");
 		}
 
 		this.updateEmptyState();
@@ -73,7 +72,23 @@ public final class FluidStack {
 		if (amount.isNegative()) amount = Fraction.ZERO;
 	}
 
-	//TODO: split and the like
+	public FluidVolume split(Fraction amount) {
+		Fraction min = Fraction.min(amount, this.amount);
+		FluidVolume volume = this.copy();
+		volume.setAmount(min);
+		this.decrement(min);
+		return volume;
+	}
+
+	//TODO: better equality/stackability methods
+	public static boolean areFluidsEqual(FluidVolume left, FluidVolume right) {
+		return left.getFluid() == right.getFluid();
+	}
+
+//	public static boolean areCombinable(FluidVolume left, FluidVolume right) {
+//		if (left == right) return true;
+//		if (left.isEmpty() && right.isEmpty()) return true;
+//	}
 
 	private void updateEmptyState() {
 		empty = isEmpty();
@@ -99,24 +114,24 @@ public final class FluidStack {
 		this.tag = tag;
 	}
 
-	public FluidStack copy() {
-		if (this.isEmpty()) return FluidStack.EMPTY;
-		FluidStack stack = new FluidStack(this.fluid, this.amount);
+	public FluidVolume copy() {
+		if (this.isEmpty()) return FluidVolume.EMPTY;
+		FluidVolume stack = new FluidVolume(this.fluid, this.amount);
 		if (this.hasTag()) stack.setTag(this.getTag());
 		return stack;
 	}
 
-	public static FluidStack fromTag(CompoundTag tag) {
-		return new FluidStack(tag);
+	public static FluidVolume fromTag(CompoundTag tag) {
+		return new FluidVolume(tag);
 	}
 
 	public CompoundTag toTag(CompoundTag tag) {
-		tag.putString("id", Registry.FLUID.getId(getFluid()).toString());
+		tag.putString("Id", Registry.FLUID.getId(getFluid()).toString());
 
 		tag.put("Amount", amount.serialize(NbtOps.INSTANCE));
 
 		if (this.tag != null) {
-			tag.put("tag", this.tag.copy());
+			tag.put("Tag", this.tag.copy());
 		}
 
 		return tag;

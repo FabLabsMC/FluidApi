@@ -1,11 +1,11 @@
-package io.github.fablabsmc.fablabs.api.fluidstack.v1;
+package io.github.fablabsmc.fablabs.api.fluidvolume.v1;
 
-import static io.github.fablabsmc.fablabs.api.fluidstack.v1.Fraction.ONE;
-import static io.github.fablabsmc.fablabs.api.fluidstack.v1.Fraction.ZERO;
-import static io.github.fablabsmc.fablabs.api.fluidstack.v1.Fraction.deserialize;
-import static io.github.fablabsmc.fablabs.api.fluidstack.v1.Fraction.multiply;
-import static io.github.fablabsmc.fablabs.api.fluidstack.v1.Fraction.ofValidDenominator;
-import static io.github.fablabsmc.fablabs.api.fluidstack.v1.Fraction.ofWhole;
+import static io.github.fablabsmc.fablabs.api.fluidvolume.v1.Fraction.ONE;
+import static io.github.fablabsmc.fablabs.api.fluidvolume.v1.Fraction.ZERO;
+import static io.github.fablabsmc.fablabs.api.fluidvolume.v1.Fraction.deserialize;
+import static io.github.fablabsmc.fablabs.api.fluidvolume.v1.Fraction.multiply;
+import static io.github.fablabsmc.fablabs.api.fluidvolume.v1.Fraction.ofValidDenominator;
+import static io.github.fablabsmc.fablabs.api.fluidvolume.v1.Fraction.ofWhole;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonPrimitive;
