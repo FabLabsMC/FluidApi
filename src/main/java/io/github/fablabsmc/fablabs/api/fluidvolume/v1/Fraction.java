@@ -28,7 +28,7 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 
 	public static Fraction of(int numerator, int denominator) {
 		if (denominator == 0) throw new ArithmeticException("Zero denominator");
-		return denominator < 0 ? ofValidDenominator(-numerator, denominator) : ofValidDenominator(numerator, denominator);
+		return denominator < 0 ? ofValidDenominator(-numerator, -denominator) : ofValidDenominator(numerator, denominator);
 	}
 
 	// should be only called if denom is positive

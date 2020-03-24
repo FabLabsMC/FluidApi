@@ -4,6 +4,7 @@ import static io.github.fablabsmc.fablabs.api.fluidvolume.v1.Fraction.ONE;
 import static io.github.fablabsmc.fablabs.api.fluidvolume.v1.Fraction.ZERO;
 import static io.github.fablabsmc.fablabs.api.fluidvolume.v1.Fraction.deserialize;
 import static io.github.fablabsmc.fablabs.api.fluidvolume.v1.Fraction.multiply;
+import static io.github.fablabsmc.fablabs.api.fluidvolume.v1.Fraction.of;
 import static io.github.fablabsmc.fablabs.api.fluidvolume.v1.Fraction.ofValidDenominator;
 import static io.github.fablabsmc.fablabs.api.fluidvolume.v1.Fraction.ofWhole;
 
@@ -19,6 +20,12 @@ import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.util.Util;
 
 public class FractionTest {
+	@Test
+	public void testSign() {
+		Assertions.assertEquals(of(2, 5), of(-2, -5));
+		Assertions.assertEquals(of(-2, 5), of(2, -5));
+	}
+
 	@Test
 	public void testSimplification() {
 		Assertions.assertEquals(ofValidDenominator(5, 5), ofValidDenominator(47, 47));
