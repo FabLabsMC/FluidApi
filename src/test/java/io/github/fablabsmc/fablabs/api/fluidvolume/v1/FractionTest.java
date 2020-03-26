@@ -89,4 +89,12 @@ public class FractionTest {
 		}), ONE.serialize(JsonOps.INSTANCE));
 		Assertions.assertEquals(new IntArrayTag(new int[] {0, 1}), ZERO.serialize(NbtOps.INSTANCE));
 	}
+
+	@Test
+	public void testFloorWithDenominator() {
+		// 4.75 <- 4.8
+		Assertions.assertEquals(Fraction.of(19, 4), Fraction.of(72, 15).floorWithDenominator(4));
+		// 1.4 <- 40/27 (1.4814..)
+		Assertions.assertEquals(Fraction.of(14, 10), Fraction.of(40, 27).floorWithDenominator(10));
+	}
 }

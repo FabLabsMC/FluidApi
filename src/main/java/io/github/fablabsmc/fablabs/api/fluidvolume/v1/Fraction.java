@@ -1,5 +1,6 @@
 package io.github.fablabsmc.fablabs.api.fluidvolume.v1;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.math.IntMath.gcd;
 
 import java.util.Objects;
@@ -126,6 +127,11 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 
 	public Fraction divide(Fraction other) {
 		return multiply(other.inverse());
+	}
+
+	public Fraction floorWithDenominator(int denom) {
+		checkArgument(denom > 0, "New denominator must be positive!");
+		return Fraction.ofValidDenominator(Math.floorDiv(this.numerator * denom, this.denominator), denom);
 	}
 
 	public static Fraction add(Fraction... addends) {
