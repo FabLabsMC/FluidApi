@@ -1,6 +1,6 @@
 package io.github.fablabsmc.fablabs.api.fluidvolume.v1;
 
-import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 
 import net.minecraft.fluid.Fluid;
 import net.minecraft.util.Identifier;
@@ -8,7 +8,7 @@ import net.minecraft.util.Identifier;
 public interface FabricFluids {
 	//TODO: getInstance
 
-	void registerProperty(Identifier id, BiFunction<FluidVolume, FluidVolume, Boolean> mergeHandler, Fluid... fluids);
+	void registerProperty(Identifier id, BiPredicate<FluidVolume, FluidVolume> mergeHandler, Fluid... fluids);
 
-	void registerUniveralProperty(Identifier id, BiFunction<FluidVolume, FluidVolume, Boolean> mergeHander);
+	void registerUniversalProperty(Identifier id, BiPredicate<FluidVolume, FluidVolume> mergeHandler);
 }
