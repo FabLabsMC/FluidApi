@@ -22,7 +22,7 @@ import net.minecraft.util.registry.Registry;
  * @see #merge(FluidVolume)
  * @see #drain(FluidVolume)
  * @see #draw(Fraction)
- * @see FixedSizedFluidVolumeImpl
+ * @see SimpleFixedSizedFluidVolume
  */
 public class FluidVolume extends AbstractCollection<FluidContainer> implements FluidContainer, SingleFluidContainer {
 	// not nullable
@@ -51,18 +51,19 @@ public class FluidVolume extends AbstractCollection<FluidContainer> implements F
 
 	/**
 	 * creates a new fluid container with custom data.
+	 * if the fluid is Fluids#EMPTY, the fraction must be equal to 0 and no data must exist in the tag
 	 *
 	 * @param fluid  the fluid
 	 * @param amount the amount of fluid contained, must be 0 if fluid is EMPTY
 	 * @param tag    the data
 	 */
 	public FluidVolume(Fluid fluid, Fraction amount, CompoundTag tag) {
-		if (fluid == Fluids.EMPTY && amount.getNumerator() != 0) {
-			throw new IllegalArgumentException("EMPTY fluid must have zero amount!");
-		}
-
 		if (fluid == null) {
 			throw new IllegalArgumentException("Fluid must not be null! Hint: Fluids.EMPTY");
+		}
+
+		if (fluid == Fluids.EMPTY && (amount.getNumerator() != 0 || !tag.isEmpty())) {
+			throw new IllegalArgumentException("EMPTY fluid must have zero amount!");
 		}
 
 		this.fluid = fluid;

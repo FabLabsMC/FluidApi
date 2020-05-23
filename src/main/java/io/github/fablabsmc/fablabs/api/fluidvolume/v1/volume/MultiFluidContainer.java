@@ -23,7 +23,6 @@ import net.minecraft.text.TranslatableText;
  */
 public class MultiFluidContainer extends AbstractCollection<FluidContainer> implements FluidContainer {
 	protected final Collection<FluidContainer> containers;
-	protected final Collection<FluidContainer> immutableContainers;
 
 	/**
 	 * create a multifluid container that wraps the given array.
@@ -40,8 +39,7 @@ public class MultiFluidContainer extends AbstractCollection<FluidContainer> impl
 	 * @param containers the subcontainers for this instance
 	 */
 	public MultiFluidContainer(Collection<FluidContainer> containers) {
-		this.containers = containers;
-		this.immutableContainers = Collections.unmodifiableCollection(containers);
+		this.containers = Collections.unmodifiableCollection(containers);
 	}
 
 	@Override
@@ -91,7 +89,7 @@ public class MultiFluidContainer extends AbstractCollection<FluidContainer> impl
 
 	@Override
 	public Collection<FluidContainer> subContainers() {
-		return this.immutableContainers;
+		return this.containers;
 	}
 
 	@Override
@@ -121,7 +119,7 @@ public class MultiFluidContainer extends AbstractCollection<FluidContainer> impl
 				text.append(container.toText());
 			}
 		}
-		
+
 		return text;
 	}
 
@@ -148,7 +146,7 @@ public class MultiFluidContainer extends AbstractCollection<FluidContainer> impl
 	@Override
 	public int hashCode() {
 		int result = this.containers != null ? this.containers.hashCode() : 0;
-		result = 31 * result + (this.immutableContainers != null ? this.immutableContainers.hashCode() : 0);
+		result = 31 * result + this.containers.hashCode();
 		return result;
 	}
 

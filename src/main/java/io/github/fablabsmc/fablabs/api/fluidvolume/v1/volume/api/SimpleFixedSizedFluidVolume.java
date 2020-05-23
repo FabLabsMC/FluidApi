@@ -8,13 +8,13 @@ import net.minecraft.nbt.CompoundTag;
 /**
  * a fluid contained with a fixed size.
  */
-public class FixedSizedFluidVolumeImpl extends FluidVolume implements FixedSizedFluidVolume {
+public class SimpleFixedSizedFluidVolume extends FluidVolume implements FixedSizedFluidVolume {
 	public final Fraction max;
 
 	/**
 	 * @param max the maximum amount of fluid this volume may hold.
 	 */
-	public FixedSizedFluidVolumeImpl(Fluid fluid, Fraction amount, Fraction max) {
+	public SimpleFixedSizedFluidVolume(Fluid fluid, Fraction amount, Fraction max) {
 		super(fluid, amount);
 		this.max = max;
 	}
@@ -22,7 +22,7 @@ public class FixedSizedFluidVolumeImpl extends FluidVolume implements FixedSized
 	/**
 	 * @param max the maximum amount of fluid this volume may hold.
 	 */
-	public FixedSizedFluidVolumeImpl(Fluid fluid, Fraction amount, CompoundTag tag, Fraction max) {
+	public SimpleFixedSizedFluidVolume(Fluid fluid, Fraction amount, CompoundTag tag, Fraction max) {
 		super(fluid, amount, tag);
 		this.max = max;
 	}
@@ -30,7 +30,7 @@ public class FixedSizedFluidVolumeImpl extends FluidVolume implements FixedSized
 	/**
 	 * @param max the maximum amount of fluid this volume may hold.
 	 */
-	public FixedSizedFluidVolumeImpl(Fraction max) {
+	public SimpleFixedSizedFluidVolume(Fraction max) {
 		this.max = max;
 	}
 

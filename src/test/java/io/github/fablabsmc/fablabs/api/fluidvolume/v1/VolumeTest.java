@@ -9,7 +9,7 @@ import io.github.fablabsmc.fablabs.api.fluidvolume.v1.math.Fraction;
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.ImmutableFluidVolume;
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.MultiFluidContainer;
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.api.FixedFractionFixedSizeFluidVolume;
-import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.api.FixedSizedFluidVolumeImpl;
+import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.api.SimpleFixedSizedFluidVolume;
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.api.FluidVolume;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -26,20 +26,20 @@ public class VolumeTest {
 
 	@Test
 	public void testOverflow() {
-		FixedSizedFluidVolumeImpl volume = new FixedSizedFluidVolumeImpl(ONE);
+		SimpleFixedSizedFluidVolume volume = new SimpleFixedSizedFluidVolume(ONE);
 		Assertions.assertEquals(volume.merge(new FluidVolume(WATER, Fraction.of(3, 2))), ONE);
 	}
 
 	@Test
 	public void testUnderflow() {
-		FixedSizedFluidVolumeImpl volume = new FixedSizedFluidVolumeImpl(ONE);
+		SimpleFixedSizedFluidVolume volume = new SimpleFixedSizedFluidVolume(ONE);
 		Fraction twoThirds = Fraction.of(2, 3);
 		Assertions.assertEquals(volume.merge(new FluidVolume(WATER, twoThirds)), twoThirds);
 	}
 
 	@Test
 	public void testDrainUnderflow() {
-		FixedSizedFluidVolumeImpl volume = new FixedSizedFluidVolumeImpl(ONE);
+		SimpleFixedSizedFluidVolume volume = new SimpleFixedSizedFluidVolume(ONE);
 		Fraction twoThirds = Fraction.of(2, 3);
 		volume.merge(new FluidVolume(WATER, twoThirds));
 		Fraction oneHalf = Fraction.of(1, 2);
@@ -48,7 +48,7 @@ public class VolumeTest {
 
 	@Test
 	public void testDrainOverflow() {
-		FixedSizedFluidVolumeImpl volume = new FixedSizedFluidVolumeImpl(ONE);
+		SimpleFixedSizedFluidVolume volume = new SimpleFixedSizedFluidVolume(ONE);
 		Fraction twoThirds = Fraction.of(2, 3);
 		volume.merge(new FluidVolume(WATER, twoThirds));
 		Assertions.assertEquals(volume.draw(ONE), new FluidVolume(WATER, twoThirds));
@@ -57,9 +57,9 @@ public class VolumeTest {
 	@Test
 	public void testMultiInsertAndDraw() {
 		MultiFluidContainer contater = new MultiFluidContainer(
-						new FixedSizedFluidVolumeImpl(ONE),
-						new FixedSizedFluidVolumeImpl(ONE),
-						new FixedSizedFluidVolumeImpl(ONE)
+						new SimpleFixedSizedFluidVolume(ONE),
+						new SimpleFixedSizedFluidVolume(ONE),
+						new SimpleFixedSizedFluidVolume(ONE)
 		);
 		Assertions.assertEquals(contater.merge(new FluidVolume(WATER, ONE)), ONE);
 		Assertions.assertEquals(contater.merge(new FluidVolume(Fluids.LAVA, ONE)), ONE);

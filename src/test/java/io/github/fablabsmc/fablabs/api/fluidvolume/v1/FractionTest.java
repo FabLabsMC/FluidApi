@@ -5,22 +5,14 @@ import com.google.gson.JsonPrimitive;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.JsonOps;
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.math.Fraction;
-import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.ImmutableFluidVolume;
-import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.MultiFluidContainer;
-import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.api.FixedFractionFixedSizeFluidVolume;
-import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.api.FixedSizedFluidVolumeImpl;
-import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.api.FluidVolume;
-import net.minecraft.Bootstrap;
+
 import net.minecraft.datafixer.NbtOps;
-import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.util.Util;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static io.github.fablabsmc.fablabs.api.fluidvolume.v1.math.Fraction.*;
-import static net.minecraft.fluid.Fluids.WATER;
 
 public class FractionTest {
 	@Test
