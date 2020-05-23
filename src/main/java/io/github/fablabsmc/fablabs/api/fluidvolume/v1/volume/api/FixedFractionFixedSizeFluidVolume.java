@@ -9,7 +9,7 @@ import net.minecraft.nbt.CompoundTag;
  * a mutable volume which has a fixed size, and can only be extracted/inserted into in descrete quanties.
  * eg. Cauldron can only be interacted with in thirds (bottles)
  */
-public class FixedFractionFixedSizeFluidVolume extends FixedSizedFluidVolume {
+public class FixedFractionFixedSizeFluidVolume extends FixedSizedFluidVolumeImpl {
 	public final Fraction fraction;
 
 	/**

@@ -109,15 +109,19 @@ public class MultiFluidContainer extends AbstractCollection<FluidContainer> impl
 	public Text toText() {
 		Text text = new LiteralText("");
 		boolean first = true;
+
 		for (FluidContainer container : this) {
 			if (!container.isEmpty()) {
 				if (!first) {
 					text.append(new TranslatableText("and"));
-				} else first = false;
+				} else {
+					first = false;
+				}
 
 				text.append(container.toText());
 			}
 		}
+		
 		return text;
 	}
 

@@ -22,7 +22,7 @@ import net.minecraft.util.registry.Registry;
  * @see #merge(FluidVolume)
  * @see #drain(FluidVolume)
  * @see #draw(Fraction)
- * @see FixedSizedFluidVolume
+ * @see FixedSizedFluidVolumeImpl
  */
 public class FluidVolume extends AbstractCollection<FluidContainer> implements FluidContainer, SingleFluidContainer {
 	// not nullable
@@ -94,7 +94,7 @@ public class FluidVolume extends AbstractCollection<FluidContainer> implements F
 	}
 
 	/**
-	 * this method is invoked after any mutable changes to the volume.
+	 * this method is invoked after any mutations to the volume.
 	 */
 	protected void resync() {
 	}

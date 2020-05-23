@@ -8,14 +8,12 @@ import io.github.fablabsmc.fablabs.api.fluidvolume.v1.math.Fraction;
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.ImmutableFluidVolume;
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.MultiFluidContainer;
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.api.FixedFractionFixedSizeFluidVolume;
-import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.api.FixedSizedFluidVolume;
+import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.api.FixedSizedFluidVolumeImpl;
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.api.FluidVolume;
 import net.minecraft.Bootstrap;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.datafixer.NbtOps;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.IntArrayTag;
-import net.minecraft.text.LiteralText;
 import net.minecraft.util.Util;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -106,14 +104,14 @@ public class FractionTest {
 	@Test
 	public void testOverflow() {
 		Bootstrap.initialize();
-		FixedSizedFluidVolume volume = new FixedSizedFluidVolume(ONE);
+		FixedSizedFluidVolumeImpl volume = new FixedSizedFluidVolumeImpl(ONE);
 		Assertions.assertEquals(volume.merge(new FluidVolume(WATER, Fraction.of(3, 2))), ONE);
 	}
 
 	@Test
 	public void testUnderflow() {
 		Bootstrap.initialize();
-		FixedSizedFluidVolume volume = new FixedSizedFluidVolume(ONE);
+		FixedSizedFluidVolumeImpl volume = new FixedSizedFluidVolumeImpl(ONE);
 		Fraction twoThirds = Fraction.of(2, 3);
 		Assertions.assertEquals(volume.merge(new FluidVolume(WATER, twoThirds)), twoThirds);
 	}
@@ -121,7 +119,7 @@ public class FractionTest {
 	@Test
 	public void testDrainUnderflow() {
 		Bootstrap.initialize();
-		FixedSizedFluidVolume volume = new FixedSizedFluidVolume(ONE);
+		FixedSizedFluidVolumeImpl volume = new FixedSizedFluidVolumeImpl(ONE);
 		Fraction twoThirds = Fraction.of(2, 3);
 		volume.merge(new FluidVolume(WATER, twoThirds));
 		Fraction oneHalf = Fraction.of(1, 2);
@@ -131,7 +129,7 @@ public class FractionTest {
 	@Test
 	public void testDrainOverflow() {
 		Bootstrap.initialize();
-		FixedSizedFluidVolume volume = new FixedSizedFluidVolume(ONE);
+		FixedSizedFluidVolumeImpl volume = new FixedSizedFluidVolumeImpl(ONE);
 		Fraction twoThirds = Fraction.of(2, 3);
 		volume.merge(new FluidVolume(WATER, twoThirds));
 		Assertions.assertEquals(volume.draw(ONE), new FluidVolume(WATER, twoThirds));
@@ -141,9 +139,9 @@ public class FractionTest {
 	public void testMultiInsertAndDraw() {
 		Bootstrap.initialize();
 		MultiFluidContainer contater = new MultiFluidContainer(
-						new FixedSizedFluidVolume(ONE),
-						new FixedSizedFluidVolume(ONE),
-						new FixedSizedFluidVolume(ONE)
+						new FixedSizedFluidVolumeImpl(ONE),
+						new FixedSizedFluidVolumeImpl(ONE),
+						new FixedSizedFluidVolumeImpl(ONE)
 		);
 		Assertions.assertEquals(contater.merge(new FluidVolume(WATER, ONE)), ONE);
 		Assertions.assertEquals(contater.merge(new FluidVolume(Fluids.LAVA, ONE)), ONE);
