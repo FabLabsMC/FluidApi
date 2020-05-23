@@ -1,23 +1,23 @@
 package io.github.fablabsmc.fablabs.api.fluidvolume.v1;
 
-import static io.github.fablabsmc.fablabs.api.fluidvolume.v1.Fraction.ONE;
-import static io.github.fablabsmc.fablabs.api.fluidvolume.v1.Fraction.ZERO;
-import static io.github.fablabsmc.fablabs.api.fluidvolume.v1.Fraction.deserialize;
-import static io.github.fablabsmc.fablabs.api.fluidvolume.v1.Fraction.multiply;
-import static io.github.fablabsmc.fablabs.api.fluidvolume.v1.Fraction.of;
-import static io.github.fablabsmc.fablabs.api.fluidvolume.v1.Fraction.ofValidDenominator;
-import static io.github.fablabsmc.fablabs.api.fluidvolume.v1.Fraction.ofWhole;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonPrimitive;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.JsonOps;
+import io.github.fablabsmc.fablabs.api.fluidvolume.v1.math.Fraction;
+import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.MultiFluidContainer;
+import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.api.FixedFractionFixedSizeFluidVolume;
+import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.api.FixedSizedFluidVolume;
+import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.api.FluidVolume;
+import net.minecraft.Bootstrap;
+import net.minecraft.datafixer.NbtOps;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.nbt.IntArrayTag;
+import net.minecraft.util.Util;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import net.minecraft.datafixer.NbtOps;
-import net.minecraft.nbt.IntArrayTag;
-import net.minecraft.util.Util;
+import static io.github.fablabsmc.fablabs.api.fluidvolume.v1.math.Fraction.*;
 
 public class FractionTest {
 	@Test
@@ -78,23 +78,55 @@ public class FractionTest {
 
 	@Test
 	public void testSerialization() {
-		Assertions.assertEquals(new IntArrayTag(new int[] {1, 2}), Fraction.of(4, 8).serialize(NbtOps.INSTANCE));
+		Assertions.assertEquals(new IntArrayTag(new int[]{1, 2}), of(4, 8).serialize(NbtOps.INSTANCE));
 		Assertions.assertEquals(Util.make(new JsonArray(), array -> {
 			array.add(2);
 			array.add(5);
-		}), Fraction.of(8, 20).serialize(JsonOps.INSTANCE));
+		}), of(8, 20).serialize(JsonOps.INSTANCE));
 		Assertions.assertEquals(Util.make(new JsonArray(), array -> {
 			array.add(1);
 			array.add(1);
 		}), ONE.serialize(JsonOps.INSTANCE));
-		Assertions.assertEquals(new IntArrayTag(new int[] {0, 1}), ZERO.serialize(NbtOps.INSTANCE));
+		Assertions.assertEquals(new IntArrayTag(new int[]{0, 1}), ZERO.serialize(NbtOps.INSTANCE));
 	}
 
 	@Test
 	public void testFloorWithDenominator() {
 		// 4.75 <- 4.8
-		Assertions.assertEquals(Fraction.of(19, 4), Fraction.of(72, 15).floorWithDenominator(4));
+		Assertions.assertEquals(of(19, 4), of(72, 15).floorWithDenominator(4));
 		// 1.4 <- 40/27 (1.4814..)
-		Assertions.assertEquals(Fraction.of(14, 10), Fraction.of(40, 27).floorWithDenominator(10));
+		Assertions.assertEquals(of(14, 10), of(40, 27).floorWithDenominator(10));
+	}
+
+
+	@Test
+	public void testFixedFractionFixedSize() {
+		Bootstrap.initialize();
+		FixedFractionFixedSizeFluidVolume fixed = new FixedFractionFixedSizeFluidVolume(ONE, of(1, 3));
+		fixed.merge(new FluidVolume(Fluids.WATER, of(1, 2)));
+		Assertions.assertEquals(of(1, 3), fixed.getTotalVolume());
+	}
+
+	@Test
+	public void testFixedSize() {
+		Bootstrap.initialize();
+		FixedSizedFluidVolume fixed = new FixedSizedFluidVolume(ONE);
+		Assertions.assertEquals(ofWhole(1), fixed.merge(new FluidVolume(Fluids.WATER, ofWhole(10))));
+		Assertions.assertEquals(ofWhole(1), fixed.getTotalVolume());
+		Assertions.assertEquals(ofWhole(0), fixed.draw(ofWhole(2)).getTotalVolume());
+		Assertions.assertEquals(Fluids.EMPTY, fixed.getFluid());
+	}
+
+	@Test
+	public void testMulti() {
+		Bootstrap.initialize();
+		// one and 1/3 buckets
+		MultiFluidContainer containers = new MultiFluidContainer(new FixedSizedFluidVolume(ONE), new FixedSizedFluidVolume(Fraction.ofThirds(1)));
+		containers.merge(new FluidVolume(Fluids.WATER, Fraction.of(1, 2)));
+		Assertions.assertEquals(of(1, 2), containers.getTotalVolume());
+		Assertions.assertEquals(containers.merge(new FluidVolume(Fluids.LAVA, Fraction.of(1, 2))), Fraction.of(1, 3));
+		Assertions.assertEquals(containers.getTotalVolume(), Fraction.of(1, 2).add(Fraction.of(1, 3)));
+		containers.drain(new FluidVolume(Fluids.LAVA, Fraction.of(1, 3)));
+		Assertions.assertEquals(containers.getTotalVolume(), Fraction.of(1, 2));
 	}
 }

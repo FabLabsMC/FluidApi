@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "io.github.fablabsmc.fablabs.api.fluidvolume.v1.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "BucketItemMixin",
+    "CauldronBlockMixin",
+    "GlassBottleItemMixin",
+    "PotionItemMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

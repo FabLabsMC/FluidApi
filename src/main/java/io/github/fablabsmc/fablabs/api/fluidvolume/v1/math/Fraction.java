@@ -1,17 +1,20 @@
-package io.github.fablabsmc.fablabs.api.fluidvolume.v1;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.math.IntMath.gcd;
-
-import java.util.Objects;
-import java.util.stream.IntStream;
+package io.github.fablabsmc.fablabs.api.fluidvolume.v1.math;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
-
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.DynamicSerializable;
+import java.util.Objects;
+import java.util.stream.IntStream;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.math.IntMath.gcd;
+
+/**
+ * a number who's value is represented as 2 integers, it's numerator and denominator
+ * this class is immutable and self-simplifies on instantiation.
+ */
 public final class Fraction extends Number implements Comparable<Fraction>, DynamicSerializable {
 	public static final Fraction ZERO = new Fraction(0, 1);
 	public static final Fraction ONE = new Fraction(1, 1);
@@ -27,20 +30,17 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 		this.denominator = denominator;
 	}
 
+	public static Fraction fromTag(CompoundTag tag) {
+		return of(tag.getInt("numerator"), tag.getInt("denominator"));
+	}
+
 	public static Fraction of(int numerator, int denominator) {
 		if (denominator == 0) throw new ArithmeticException("Zero denominator");
 		return denominator < 0 ? ofValidDenominator(-numerator, -denominator) : ofValidDenominator(numerator, denominator);
 	}
 
-	// should be only called if denom is positive
-	@VisibleForTesting
-	static Fraction ofValidDenominator(int numerator, int denominator) {
-		if (numerator == 0) return ZERO;
-		if (numerator == denominator) return ONE;
-
-		int gcd = gcd(Math.abs(numerator), denominator);
-
-		return new Fraction(numerator / gcd, denominator / gcd);
+	public int getNumerator(int denominator) {
+		return this.numerator * (denominator / this.denominator);
 	}
 
 	//TODO: What shortcuts should we have, and how should we name them? This is in a Minecraft context, after all.
@@ -63,45 +63,72 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 	}
 
 	public int getNumerator() {
-		return numerator;
+		return this.numerator;
+	}
+
+	public boolean divisible(Fraction fraction) {
+		return this.divide(fraction).getDenominator() == 1;
 	}
 
 	public int getDenominator() {
-		return denominator;
+		return this.denominator;
 	}
 
-	public boolean isNegative() {
-		return numerator < 0;
+	public Fraction divide(Fraction other) {
+		return this.multiply(other.inverse());
 	}
 
-	public boolean isPositive() {
-		return numerator > 0;
-	}
-
-	public int signum() {
-		return Integer.signum(numerator);
-	}
-
-	@Override
-	public double doubleValue() {
-		return ((double) numerator) / denominator;
-	}
-
-	public Fraction negate() {
-		// don't need to simplify
-		return new Fraction(-numerator, denominator);
+	public Fraction multiply(Fraction other) {
+		int gcd1 = gcd(Math.abs(this.numerator), other.denominator);
+		int gcd2 = gcd(this.denominator, Math.abs(other.numerator));
+		// guaranteed simplified
+		return new Fraction(this.signum() * other.signum() * (this.numerator / gcd1) * (other.numerator / gcd2), (this.denominator / gcd2) * (other.denominator / gcd1));
 	}
 
 	public Fraction inverse() throws ArithmeticException {
 		// don't need to simplify
-		switch (signum()) {
-		case 1:
-			return new Fraction(denominator, numerator);
-		case -1:
-			return new Fraction(-denominator, -numerator);
-		default:
-			throw new ArithmeticException("Cannot invert zero fraction!");
+		switch (this.signum()) {
+			case 1:
+				return new Fraction(this.denominator, this.numerator);
+			case -1:
+				return new Fraction(-this.denominator, -this.numerator);
+			default:
+				throw new ArithmeticException("Cannot invert zero fraction!");
 		}
+	}
+
+	public int signum() {
+		return Integer.signum(this.numerator);
+	}
+
+	public Fraction floorNearest(Fraction fraction) {
+		return fraction.multiply(ofWhole(this.floorDiv(fraction)));
+	}
+
+	public int floorDiv(Fraction fraction) {
+		return Math.floorDiv(this.numerator * fraction.denominator, fraction.numerator * this.denominator);
+	}
+
+	public boolean isNegative() {
+		return this.numerator < 0;
+	}
+
+	public boolean isPositive() {
+		return this.numerator > 0;
+	}
+
+	@Override
+	public double doubleValue() {
+		return ((double) this.numerator) / this.denominator;
+	}
+
+	public Fraction negate() {
+		// don't need to simplify
+		return new Fraction(-this.numerator, this.denominator);
+	}
+
+	public Fraction multiply(int amount) {
+		return of(this.numerator * amount, this.denominator);
 	}
 
 	public Fraction add(Fraction other) {
@@ -118,20 +145,32 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 		return ofValidDenominator(leftNumerator - rightNumerator, commonMultiple);
 	}
 
-	public Fraction multiply(Fraction other) {
-		int gcd1 = gcd(Math.abs(this.numerator), other.denominator);
-		int gcd2 = gcd(this.denominator, Math.abs(other.numerator));
-		// guaranteed simplified
-		return new Fraction(signum() * other.signum() * (this.numerator / gcd1) * (other.numerator / gcd2), (this.denominator / gcd2) * (other.denominator / gcd1));
-	}
-
-	public Fraction divide(Fraction other) {
-		return multiply(other.inverse());
-	}
-
 	public Fraction floorWithDenominator(int denom) {
 		checkArgument(denom > 0, "New denominator must be positive!");
+		if (denom == this.getDenominator()) return this;
 		return Fraction.ofValidDenominator(Math.floorDiv(this.numerator * denom, this.denominator), denom);
+	}
+
+	// should be only called if denom is positive
+	@VisibleForTesting
+	public static Fraction ofValidDenominator(int numerator, int denominator) {
+		if (numerator == 0) return ZERO;
+		if (numerator == denominator) return ONE;
+
+		int gcd = gcd(Math.abs(numerator), denominator);
+
+		return new Fraction(numerator / gcd, denominator / gcd);
+	}
+
+	public boolean isGreaterThan(Fraction fraction) {
+		return this.compareTo(fraction) > 0;
+	}
+
+	@Override
+	public int compareTo(Fraction other) {
+		long leftNum = this.numerator * other.denominator;
+		long rightNum = other.numerator * this.denominator;
+		return Long.compare(leftNum, rightNum);
 	}
 
 	public static Fraction add(Fraction... addends) {
@@ -193,12 +232,21 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 		return a / gcd(a, b) * b; // divide first to prevent overflow
 	}
 
+	public boolean isGreaterThanOrEqualTo(Fraction fraction) {
+		return this.compareTo(fraction) >= 0;
+	}
+
 	@Override
-	public int compareTo(Fraction other) {
-		int leftNum = this.numerator * other.denominator;
-		int rightNum = other.numerator * this.denominator;
-		// todo integer overflow
-		return Integer.compare(leftNum, rightNum);
+	public int hashCode() {
+		return Objects.hash(this.numerator, this.denominator);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || this.getClass() != o.getClass()) return false;
+		Fraction fraction = (Fraction) o;
+		return this.numerator == fraction.numerator && this.denominator == fraction.denominator;
 	}
 
 	public static Fraction max(Fraction left, Fraction right) {
@@ -210,37 +258,38 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 	}
 
 	@Override
+	public String toString() {
+		int whole = this.numerator / this.denominator;
+		int part = this.numerator % this.denominator;
+		return whole + " " + part + "/" + this.denominator;
+	}
+
+	public void toTag(CompoundTag tag) {
+		tag.putInt("numerator", this.numerator);
+		tag.putInt("denominator", this.denominator);
+	}
+
+	@Override
 	public int intValue() {
-		return numerator / denominator;
+		return this.numerator / this.denominator;
+	}
+
+	@Override
+	public <T> T serialize(DynamicOps<T> ops) {
+		return ops.createIntList(IntStream.of(this.numerator, this.denominator));
 	}
 
 	@Override
 	public long longValue() {
-		return intValue();
+		return this.intValue();
 	}
+
 
 	@Override
 	public float floatValue() {
-		return (float) doubleValue();
+		return (float) this.doubleValue();
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		Fraction fraction = (Fraction) o;
-		return numerator == fraction.numerator && denominator == fraction.denominator;
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(numerator, denominator);
-	}
-
-	@Override
-	public String toString() {
-		return numerator + "/" + denominator;
-	}
 
 	public static <T> Fraction deserialize(Dynamic<T> dynamic) {
 		int[] arr = dynamic.asIntStream().toArray();
@@ -256,8 +305,5 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 		return of(arr[0], arr[1]);
 	}
 
-	@Override
-	public <T> T serialize(DynamicOps<T> ops) {
-		return ops.createIntList(IntStream.of(numerator, denominator));
-	}
+
 }
