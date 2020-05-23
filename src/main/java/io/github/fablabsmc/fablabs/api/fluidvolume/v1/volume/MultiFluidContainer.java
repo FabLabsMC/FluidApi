@@ -14,6 +14,10 @@ import io.github.fablabsmc.fablabs.api.fluidvolume.v1.math.Fraction;
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.api.FluidContainer;
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.api.FluidVolume;
 
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+
 /**
  * a fluid container that holds multiple fluid containers in itself.
  */
@@ -99,6 +103,22 @@ public class MultiFluidContainer extends AbstractCollection<FluidContainer> impl
 		}
 
 		return fraction;
+	}
+
+	@Override
+	public Text toText() {
+		Text text = new LiteralText("");
+		boolean first = true;
+		for (FluidContainer container : this) {
+			if (!container.isEmpty()) {
+				if (!first) {
+					text.append(new TranslatableText("and"));
+				} else first = false;
+
+				text.append(container.toText());
+			}
+		}
+		return text;
 	}
 
 	@Override

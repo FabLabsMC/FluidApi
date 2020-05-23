@@ -4,6 +4,8 @@ import java.util.Collection;
 
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.math.Fraction;
 
+import net.minecraft.text.Text;
+
 /**
  * the fluid counterpart to {@link net.minecraft.inventory.Inventory}.
  */
@@ -61,4 +63,9 @@ public interface FluidContainer {
 	 * @return the volume
 	 */
 	Fraction getTotalVolume();
+
+	/**
+	 * gets a textual representation of the fluids in this fluid container.
+	 */
+	Text toText();
 }

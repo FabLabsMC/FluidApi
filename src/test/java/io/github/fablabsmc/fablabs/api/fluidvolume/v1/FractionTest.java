@@ -11,14 +11,17 @@ import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.api.FixedFractionFi
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.api.FixedSizedFluidVolume;
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.api.FluidVolume;
 import net.minecraft.Bootstrap;
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.datafixer.NbtOps;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.IntArrayTag;
+import net.minecraft.text.LiteralText;
 import net.minecraft.util.Util;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static io.github.fablabsmc.fablabs.api.fluidvolume.v1.math.Fraction.*;
+import static net.minecraft.fluid.Fluids.WATER;
 
 public class FractionTest {
 	@Test
@@ -104,7 +107,7 @@ public class FractionTest {
 	public void testOverflow() {
 		Bootstrap.initialize();
 		FixedSizedFluidVolume volume = new FixedSizedFluidVolume(ONE);
-		Assertions.assertEquals(volume.merge(new FluidVolume(Fluids.WATER, Fraction.of(3, 2))), ONE);
+		Assertions.assertEquals(volume.merge(new FluidVolume(WATER, Fraction.of(3, 2))), ONE);
 	}
 
 	@Test
@@ -112,7 +115,7 @@ public class FractionTest {
 		Bootstrap.initialize();
 		FixedSizedFluidVolume volume = new FixedSizedFluidVolume(ONE);
 		Fraction twoThirds = Fraction.of(2, 3);
-		Assertions.assertEquals(volume.merge(new FluidVolume(Fluids.WATER, twoThirds)), twoThirds);
+		Assertions.assertEquals(volume.merge(new FluidVolume(WATER, twoThirds)), twoThirds);
 	}
 
 	@Test
@@ -120,9 +123,9 @@ public class FractionTest {
 		Bootstrap.initialize();
 		FixedSizedFluidVolume volume = new FixedSizedFluidVolume(ONE);
 		Fraction twoThirds = Fraction.of(2, 3);
-		volume.merge(new FluidVolume(Fluids.WATER, twoThirds));
+		volume.merge(new FluidVolume(WATER, twoThirds));
 		Fraction oneHalf = Fraction.of(1, 2);
-		Assertions.assertEquals(volume.draw(oneHalf), new FluidVolume(Fluids.WATER, oneHalf));
+		Assertions.assertEquals(volume.draw(oneHalf), new FluidVolume(WATER, oneHalf));
 	}
 
 	@Test
@@ -130,8 +133,8 @@ public class FractionTest {
 		Bootstrap.initialize();
 		FixedSizedFluidVolume volume = new FixedSizedFluidVolume(ONE);
 		Fraction twoThirds = Fraction.of(2, 3);
-		volume.merge(new FluidVolume(Fluids.WATER, twoThirds));
-		Assertions.assertEquals(volume.draw(ONE), new FluidVolume(Fluids.WATER, twoThirds));
+		volume.merge(new FluidVolume(WATER, twoThirds));
+		Assertions.assertEquals(volume.draw(ONE), new FluidVolume(WATER, twoThirds));
 	}
 
 	@Test
@@ -142,10 +145,10 @@ public class FractionTest {
 						new FixedSizedFluidVolume(ONE),
 						new FixedSizedFluidVolume(ONE)
 		);
-		Assertions.assertEquals(contater.merge(new FluidVolume(Fluids.WATER, ONE)), ONE);
+		Assertions.assertEquals(contater.merge(new FluidVolume(WATER, ONE)), ONE);
 		Assertions.assertEquals(contater.merge(new FluidVolume(Fluids.LAVA, ONE)), ONE);
 		Assertions.assertEquals(contater.draw(ofWhole(2)), new MultiFluidContainer(
-						new FluidVolume(Fluids.WATER, ONE),
+						new FluidVolume(WATER, ONE),
 						new FluidVolume(Fluids.LAVA, ONE)
 		));
 	}
@@ -154,8 +157,16 @@ public class FractionTest {
 	public void testFractionalInsert() {
 		FixedFractionFixedSizeFluidVolume volume = new FixedFractionFixedSizeFluidVolume(ONE.multiply(4), ONE);
 		Fraction twoThirds = Fraction.of(2, 3);
-		Assertions.assertEquals(volume.merge(new FluidVolume(Fluids.WATER, twoThirds)), ZERO);
+		Assertions.assertEquals(volume.merge(new FluidVolume(WATER, twoThirds)), ZERO);
 		Assertions.assertEquals(volume.draw(ONE), ImmutableFluidVolume.EMPTY);
 		Assertions.assertEquals(volume.merge(new FluidVolume(Fluids.LAVA, ONE)), ONE);
+	}
+
+	@Test
+	public void testText() {
+		FluidVolume volume = new FluidVolume(WATER, ONE);
+		Assertions.assertEquals(volume.toText().asFormattedString(), "text.fluid.singular");
+		Assertions.assertEquals(ImmutableFluidVolume.EMPTY.toText().asFormattedString(), "text.fluid.empty");
+		Assertions.assertEquals(new FluidVolume(WATER, ofWhole(2)).toText().asFormattedString(), "text.fluid.plural");
 	}
 }
