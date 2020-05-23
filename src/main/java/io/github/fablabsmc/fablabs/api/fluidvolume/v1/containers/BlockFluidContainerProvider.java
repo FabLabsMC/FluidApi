@@ -11,7 +11,7 @@ import net.minecraft.world.World;
  * implemented on the {@link net.minecraft.block.Block} class, this interface states
  * that the block may have a container for a blockstate of it's type.
  */
-public interface SidedFluidContainer {
+public interface BlockFluidContainerProvider {
 	/**
 	 * get the fluid volume for the given side or null if none found.
 	 */

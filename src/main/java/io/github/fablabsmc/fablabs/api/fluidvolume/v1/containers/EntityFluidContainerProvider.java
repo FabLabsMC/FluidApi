@@ -7,7 +7,7 @@ import net.minecraft.util.math.Direction;
 /**
  * an entity that carries fluids.
  */
-public interface EntityFluidContainer {
+public interface EntityFluidContainerProvider {
 	/**
 	 * @return the fluid container for this entity
 	 */

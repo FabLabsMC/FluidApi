@@ -1,7 +1,7 @@
 package io.github.fablabsmc.fablabs.api.fluidvolume.v1.mixin;
 
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.access.BucketItemAccess;
-import io.github.fablabsmc.fablabs.api.fluidvolume.v1.containers.ItemFluidContainer;
+import io.github.fablabsmc.fablabs.api.fluidvolume.v1.containers.ItemFluidContainerProvider;
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.vanilla.BucketFluidVolume;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -12,7 +12,7 @@ import net.minecraft.item.BucketItem;
 import net.minecraft.item.ItemStack;
 
 @Mixin(BucketItem.class) // buckets hold fluids, but not fractional amounts
-public class BucketItemMixin implements BucketItemAccess, ItemFluidContainer {
+public class BucketItemMixin implements BucketItemAccess, ItemFluidContainerProvider {
 	@Shadow
 	@Final
 	private Fluid fluid;

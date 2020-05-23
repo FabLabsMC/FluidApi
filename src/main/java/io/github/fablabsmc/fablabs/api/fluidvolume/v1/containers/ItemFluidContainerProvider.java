@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
  * implemented on an {@link ItemStack} class, this interface states the item may have a container for
  * an item stack with it's own type.
  */
-public interface ItemFluidContainer {
+public interface ItemFluidContainerProvider {
 	/**
 	 * return the container for the given stack.
 	 * reminder: ItemStack#getCount is not guaranteed to be 1.
