@@ -3,6 +3,7 @@ package io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.api;
 import java.util.Collection;
 
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.math.Fraction;
+import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.ImmutableFluidVolume;
 
 import net.minecraft.text.Text;
 
@@ -68,4 +69,11 @@ public interface FluidContainer {
 	 * gets a textual representation of the fluids in this fluid container.
 	 */
 	Text toText();
+
+	/**
+	 * @return true if the fluid container is immutable.
+	 */
+	default boolean isImmutable() {
+		return this instanceof ImmutableFluidVolume;
+	}
 }
