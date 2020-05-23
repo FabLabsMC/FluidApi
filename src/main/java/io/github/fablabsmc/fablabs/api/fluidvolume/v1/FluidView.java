@@ -68,10 +68,6 @@ public final class FluidView {
 	 * @return ImmutableFluidVolume#EMPTY if no fluid container exists for the itemstack
 	 */
 	public static FluidContainer getContainer(ItemStack stack) {
-		if (stack.getCount() != 1) {
-			throw new IllegalArgumentException("ItemStack must be of size one! Hint: PlayerSlotFluidContainer");
-		}
-
 		Item item = stack.getItem();
 
 		if (item instanceof ItemFluidContainer) {

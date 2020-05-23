@@ -260,7 +260,9 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 
 	@Override
 	public int hashCode() {
-		return this.numerator ^ this.denominator;
+		int result = this.numerator;
+		result = 31 * result + this.denominator;
+		return result;
 	}
 
 	@Override
