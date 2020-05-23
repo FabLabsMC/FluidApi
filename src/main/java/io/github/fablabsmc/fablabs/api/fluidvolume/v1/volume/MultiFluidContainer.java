@@ -1,20 +1,28 @@
 package io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume;
 
+import java.util.AbstractCollection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.BiFunction;
+
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.math.Fraction;
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.api.FluidContainer;
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.api.FluidVolume;
-import java.util.*;
-import java.util.function.BiFunction;
 
 /**
- * a fluid container that holds multiple fluid containers in itself
+ * a fluid container that holds multiple fluid containers in itself.
  */
 public class MultiFluidContainer extends AbstractCollection<FluidContainer> implements FluidContainer {
-	private final Collection<FluidContainer> containers;
-	private final Collection<FluidContainer> immutableContainers;
+	protected final Collection<FluidContainer> containers;
+	protected final Collection<FluidContainer> immutableContainers;
 
 	/**
-	 * create a multifluid container that wraps the given array
+	 * create a multifluid container that wraps the given array.
 	 *
 	 * @param containers the subcontainers for this instance
 	 */
@@ -23,7 +31,7 @@ public class MultiFluidContainer extends AbstractCollection<FluidContainer> impl
 	}
 
 	/**
-	 * create a multifluid container that wraps the given collection
+	 * create a multifluid container that wraps the given collection.
 	 *
 	 * @param containers the subcontainers for this instance
 	 */
@@ -39,13 +47,22 @@ public class MultiFluidContainer extends AbstractCollection<FluidContainer> impl
 
 	protected Fraction combine(FluidVolume volume, BiFunction<FluidContainer, FluidVolume, Fraction> combiner) {
 		Fraction toMerge = volume.getTotalVolume();
-		if (toMerge.equals(Fraction.ZERO)) return Fraction.ZERO;
+
+		if (toMerge.equals(Fraction.ZERO)) {
+			return Fraction.ZERO;
+		}
+
 		for (FluidContainer container : this.containers) {
 			Fraction fraction = combiner.apply(container, volume.of(toMerge));
+			this.resync(container);
 			toMerge = toMerge.subtract(fraction);
 			if (toMerge.equals(Fraction.ZERO)) return volume.getTotalVolume();
 		}
+
 		return volume.getTotalVolume().subtract(toMerge);
+	}
+
+	protected void resync(FluidContainer container) {
 	}
 
 	@Override
@@ -56,12 +73,15 @@ public class MultiFluidContainer extends AbstractCollection<FluidContainer> impl
 	@Override
 	public FluidContainer draw(Fraction fraction) {
 		List<FluidContainer> draws = new ArrayList<>();
+
 		for (FluidContainer container : this.containers) {
 			if (fraction.equals(Fraction.ZERO)) break;
 			FluidContainer drained = container.draw(fraction);
+			this.resync(container);
 			fraction = fraction.subtract(drained.getTotalVolume());
 			draws.add(drained);
 		}
+
 		return new MultiFluidContainer(draws);
 	}
 
@@ -73,9 +93,11 @@ public class MultiFluidContainer extends AbstractCollection<FluidContainer> impl
 	@Override
 	public Fraction getTotalVolume() {
 		Fraction fraction = Fraction.ZERO;
+
 		for (FluidContainer container : this.containers) {
 			fraction = fraction.add(container.getTotalVolume());
 		}
+
 		return fraction;
 	}
 

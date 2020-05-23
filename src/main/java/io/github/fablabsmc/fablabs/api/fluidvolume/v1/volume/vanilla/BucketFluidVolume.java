@@ -3,6 +3,7 @@ package io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.vanilla;
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.access.BucketItemAccess;
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.math.Fraction;
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.ImmutableFluidVolume;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 
@@ -10,5 +11,4 @@ public class BucketFluidVolume extends ImmutableFluidVolume /*unfortunately, due
 	public BucketFluidVolume(ItemStack buckets) {
 		super(((BucketItemAccess) buckets.getItem()).getFluid(), (buckets.getItem() == Items.BUCKET ? Fraction.ZERO : Fraction.ONE).multiply(buckets.getCount()), buckets.getSubTag("fluid_data"));
 	}
-
 }

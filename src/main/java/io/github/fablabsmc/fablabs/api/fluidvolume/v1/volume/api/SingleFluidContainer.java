@@ -4,11 +4,11 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.CompoundTag;
 
 /**
- * a container who only stores 1 type of fluid, also known as a Volume
+ * a container who only stores 1 type of fluid, also known as a Volume.
  */
 public interface SingleFluidContainer extends FluidContainer {
 	/**
-	 * get the fluid this volume contains
+	 * get the fluid this volume contains.
 	 * if the fluid is EMPTY, then {@link #getTotalVolume()}
 	 * must be zero, a EMPTY fluid represents no fluid at all
 	 *
@@ -17,7 +17,7 @@ public interface SingleFluidContainer extends FluidContainer {
 	Fluid getFluid();
 
 	/**
-	 * gets the nbt data of the fluid
+	 * gets the nbt data of the fluid.
 	 *
 	 * @return the nbt data
 	 */

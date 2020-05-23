@@ -1,24 +1,23 @@
 package io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.api;
 
-import com.google.common.collect.Iterators;
-import io.github.fablabsmc.fablabs.api.fluidvolume.v1.math.Fraction;
-import io.github.fablabsmc.fablabs.api.fluidvolume.v1.properties.FluidPropertyManager;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import java.util.AbstractCollection;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Objects;
 
+import com.google.common.collect.Iterators;
+import io.github.fablabsmc.fablabs.api.fluidvolume.v1.math.Fraction;
+import io.github.fablabsmc.fablabs.api.fluidvolume.v1.properties.FluidPropertyManager;
+
+import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
+
 /**
- * a mutable representation of a quantity and it's data of a fluid
- * this class can and should be extended for custom logic when dealing with
- * volume merging
- * <p>
- * the relavent methods for overriding are
+ * a mutable representation of a quantity and it's data of a fluid.
+ * this class can and should be extended for custom logic when dealing with volume merging.
  *
  * @see #merge(FluidVolume)
  * @see #drain(FluidVolume)
@@ -34,16 +33,16 @@ public class FluidVolume extends AbstractCollection<FluidContainer> implements F
 	protected CompoundTag tag;
 
 	/**
-	 * creates a new empty fluid container
+	 * creates a new empty fluid container.
 	 */
 	public FluidVolume() {
 		this(Fluids.EMPTY, Fraction.ZERO);
 	}
 
 	/**
-	 * creates a new fluid container with an empty data tag
+	 * creates a new fluid container with an empty data tag.
 	 *
-	 * @param fluid the fluid
+	 * @param fluid  the fluid
 	 * @param amount the amount of fluid contained, must be 0 if fluid is null
 	 */
 	public FluidVolume(Fluid fluid, Fraction amount) {
@@ -51,15 +50,21 @@ public class FluidVolume extends AbstractCollection<FluidContainer> implements F
 	}
 
 	/**
-	 * creates a new fluid container with custom data
+	 * creates a new fluid container with custom data.
 	 *
-	 * @param fluid the fluid
+	 * @param fluid  the fluid
 	 * @param amount the amount of fluid contained, must be 0 if fluid is EMPTY
-	 * @param tag the data
+	 * @param tag    the data
 	 */
 	public FluidVolume(Fluid fluid, Fraction amount, CompoundTag tag) {
-		if (fluid == Fluids.EMPTY && amount.getNumerator() != 0) throw new IllegalArgumentException("EMPTY fluid must have zero amount!");
-		if (fluid == null) throw new IllegalArgumentException("Fluid must not be null! Hint: Fluids.EMPTY");
+		if (fluid == Fluids.EMPTY && amount.getNumerator() != 0) {
+			throw new IllegalArgumentException("EMPTY fluid must have zero amount!");
+		}
+
+		if (fluid == null) {
+			throw new IllegalArgumentException("Fluid must not be null! Hint: Fluids.EMPTY");
+		}
+
 		this.fluid = fluid;
 		this.amount = amount;
 		this.tag = tag;
@@ -67,7 +72,9 @@ public class FluidVolume extends AbstractCollection<FluidContainer> implements F
 
 	@Override
 	public Fraction merge(FluidVolume volume) {
-		if (volume.isEmpty()) return Fraction.ZERO;
+		if (volume.isEmpty()) {
+			return Fraction.ZERO;
+		}
 
 		if (this.isEmpty()) { // empty
 			this.fluid = volume.fluid;
@@ -87,16 +94,20 @@ public class FluidVolume extends AbstractCollection<FluidContainer> implements F
 	}
 
 	/**
-	 * this method is invoked after any mutable changes to the volume
+	 * this method is invoked after any mutable changes to the volume.
 	 */
-	protected void resync() {}
+	protected void resync() {
+	}
 
 	@Override
 	public Fraction drain(FluidVolume volume) {
 		if (volume.fluid != this.fluid) return Fraction.ZERO;
 		Fraction fraction = volume.amount;
 
-		if (fraction.isNegative()) throw new UnsupportedOperationException("Fraction may not be negative, use merge for adding fluids to a container");
+		if (fraction.isNegative()) {
+			throw new UnsupportedOperationException("Fraction may not be negative, use merge for adding fluids to a container");
+		}
+
 		if (fraction.getNumerator() == 0) return fraction;
 
 		if (fraction.isGreaterThanOrEqualTo(this.amount)) {
@@ -129,7 +140,10 @@ public class FluidVolume extends AbstractCollection<FluidContainer> implements F
 	}
 
 	public FluidVolume of(Fraction amount) {
-		if (amount.equals(Fraction.ZERO) || this.fluid == Fluids.EMPTY) return new FluidVolume(Fluids.EMPTY, Fraction.ZERO, this.tag);
+		if (amount.equals(Fraction.ZERO) || this.fluid == Fluids.EMPTY) {
+			return new FluidVolume(Fluids.EMPTY, Fraction.ZERO, this.tag);
+		}
+
 		return new FluidVolume(this.fluid, amount, this.tag);
 	}
 
@@ -144,7 +158,7 @@ public class FluidVolume extends AbstractCollection<FluidContainer> implements F
 	}
 
 	/**
-	 * clones the fluid volume, including it's custom data tag
+	 * clones the fluid volume, including it's custom data tag.
 	 *
 	 * @return a newly created object
 	 */

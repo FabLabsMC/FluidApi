@@ -2,11 +2,12 @@ package io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.vanilla;
 
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.math.Fraction;
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.ImmutableFluidVolume;
+
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 
 /**
- * potions, in my mind atleast, are just water bottles with stuff in it
+ * potions, in my mind atleast, are just water bottles with stuff in it.
  *
  * @author HalfOf2
  */

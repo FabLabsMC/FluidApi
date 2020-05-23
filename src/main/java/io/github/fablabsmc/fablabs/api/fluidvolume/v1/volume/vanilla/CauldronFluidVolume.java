@@ -3,6 +3,7 @@ package io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.vanilla;
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.math.Fraction;
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.api.FixedFractionFixedSizeFluidVolume;
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.api.FluidVolume;
+
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CauldronBlock;
@@ -11,7 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**
- * A fluid container for cauldrons, does not support tags, so hot water and cold water is just water
+ * A fluid container for cauldrons, does not support tags, so hot water and cold water is just water.
  */
 public class CauldronFluidVolume extends FixedFractionFixedSizeFluidVolume {
 	public static final int MAX_LEVEL = CauldronBlock.LEVEL.getValues().size() - 1; // incase a mod decides to change the cauldron level
