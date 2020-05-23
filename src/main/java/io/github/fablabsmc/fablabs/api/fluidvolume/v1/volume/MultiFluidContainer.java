@@ -131,7 +131,7 @@ public class MultiFluidContainer extends AbstractCollection<FluidContainer> impl
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
-		if (o == null || this.getClass() != o.getClass()) return false;
+		if (!(o instanceof MultiFluidContainer)) return false;
 		MultiFluidContainer that = (MultiFluidContainer) o;
 		return Objects.equals(this.containers, that.containers);
 	}

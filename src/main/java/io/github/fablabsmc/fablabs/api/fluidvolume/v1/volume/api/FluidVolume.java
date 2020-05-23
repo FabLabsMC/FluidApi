@@ -126,7 +126,9 @@ public class FluidVolume extends AbstractCollection<FluidContainer> implements F
 
 	@Override
 	public FluidContainer draw(Fraction fraction) {
-		return this.of(this.drain(this.of(fraction)));
+		Fluid fluid = this.getFluid();
+		CompoundTag tag = this.getData();
+		return new FluidVolume(fluid, this.drain(this.of(fraction)), tag);
 	}
 
 	@Override
@@ -210,7 +212,7 @@ public class FluidVolume extends AbstractCollection<FluidContainer> implements F
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
-		if (o == null || this.getClass() != o.getClass()) return false;
+		if (!(o instanceof FluidVolume)) return false;
 
 		FluidVolume volume = (FluidVolume) o;
 
