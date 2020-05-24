@@ -21,7 +21,7 @@ import net.fabricmc.fabric.api.event.EventFactory;
  * blocks aren't sufficient for whatever reason.
  */
 public interface WorldFluidCallback {
-	Event<WorldFluidCallback> EVENT = EventFactory.createArrayBacked(WorldFluidCallback.class, (w, p, f) -> ImmutableFluidVolume.EMPTY,c -> (world, pos, face) -> {
+	Event<WorldFluidCallback> EVENT = EventFactory.createArrayBacked(WorldFluidCallback.class, (w, p, f) -> ImmutableFluidVolume.EMPTY, c -> (world, pos, face) -> {
 		List<FluidContainer> provider = new ArrayList<>();
 
 		for (WorldFluidCallback callback : c) {

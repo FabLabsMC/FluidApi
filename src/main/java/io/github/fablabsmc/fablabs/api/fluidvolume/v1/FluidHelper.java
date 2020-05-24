@@ -50,8 +50,8 @@ public final class FluidHelper {
 
 		for (Entity entity : world.getEntities((Entity) null, new Box(pos), e -> e instanceof EntityFluidContainerProvider)) {
 			FluidContainer fluidContainer = ((EntityFluidContainerProvider) entity).getContainer(side);
-			
-			if(fluidContainer != null) {
+
+			if (fluidContainer != null) {
 				containers.add(fluidContainer);
 			}
 		}
