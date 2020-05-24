@@ -1,4 +1,4 @@
-package io.github.fablabsmc.fablabs.api.fluidvolume.v1.mixin;
+package io.github.fablabsmc.fablabs.api.fluidvolume.mixin;
 
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.access.BucketItemAccess;
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.containers.ItemFluidContainerProvider;
