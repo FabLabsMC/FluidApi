@@ -3,6 +3,7 @@ package io.github.fablabsmc.fablabs.api.fluidvolume.v1;
 import static io.github.fablabsmc.fablabs.api.fluidvolume.v1.math.Fraction.ONE;
 import static io.github.fablabsmc.fablabs.api.fluidvolume.v1.math.Fraction.ZERO;
 import static io.github.fablabsmc.fablabs.api.fluidvolume.v1.math.Fraction.ofWhole;
+import static net.minecraft.fluid.Fluids.LAVA;
 import static net.minecraft.fluid.Fluids.WATER;
 
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.math.Fraction;
@@ -20,7 +21,7 @@ import net.minecraft.fluid.Fluids;
 
 public class VolumeTest {
 	@BeforeAll
-	public void boostrap() {
+	public static void boostrap() {
 		Bootstrap.initialize();
 	}
 
@@ -50,8 +51,9 @@ public class VolumeTest {
 	public void testDrainOverflow() {
 		SimpleFixedSizedFluidVolume volume = new SimpleFixedSizedFluidVolume(ONE);
 		Fraction twoThirds = Fraction.of(2, 3);
-		volume.merge(new FluidVolume(WATER, twoThirds));
-		Assertions.assertEquals(volume.draw(ONE), new FluidVolume(WATER, twoThirds));
+		Assertions.assertEquals(volume.merge(new FluidVolume(WATER, twoThirds)), twoThirds);
+		Assertions.assertEquals(volume.drain(new FluidVolume(LAVA, ONE)), ImmutableFluidVolume.EMPTY);
+		Assertions.assertEquals(volume.drain(new FluidVolume(WATER, ONE)), new FluidVolume(WATER, twoThirds));
 	}
 
 	@Test
@@ -62,10 +64,10 @@ public class VolumeTest {
 						new SimpleFixedSizedFluidVolume(ONE)
 		);
 		Assertions.assertEquals(contater.merge(new FluidVolume(WATER, ONE)), ONE);
-		Assertions.assertEquals(contater.merge(new FluidVolume(Fluids.LAVA, ONE)), ONE);
+		Assertions.assertEquals(contater.merge(new FluidVolume(LAVA, ONE)), ONE);
 		Assertions.assertEquals(contater.draw(ofWhole(2)), new MultiFluidContainer(
 						new FluidVolume(WATER, ONE),
-						new FluidVolume(Fluids.LAVA, ONE)
+						new FluidVolume(LAVA, ONE)
 		));
 	}
 
@@ -75,7 +77,7 @@ public class VolumeTest {
 		Fraction twoThirds = Fraction.of(2, 3);
 		Assertions.assertEquals(volume.merge(new FluidVolume(WATER, twoThirds)), ZERO);
 		Assertions.assertEquals(volume.draw(ONE), ImmutableFluidVolume.EMPTY);
-		Assertions.assertEquals(volume.merge(new FluidVolume(Fluids.LAVA, ONE)), ONE);
+		Assertions.assertEquals(volume.merge(new FluidVolume(LAVA, ONE)), ONE);
 	}
 
 	@Test

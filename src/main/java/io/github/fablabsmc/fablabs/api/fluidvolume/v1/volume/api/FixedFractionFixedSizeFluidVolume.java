@@ -52,7 +52,7 @@ public class FixedFractionFixedSizeFluidVolume extends SimpleFixedSizedFluidVolu
 	}
 
 	@Override
-	public Fraction drain(FluidVolume volume) {
+	public FluidVolume drain(FluidVolume volume) {
 		return super.drain(volume.of(volume.getTotalVolume().floorNearest(this.fraction)));
 	}
 

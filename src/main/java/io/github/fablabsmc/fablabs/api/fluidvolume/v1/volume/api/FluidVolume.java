@@ -8,6 +8,7 @@ import java.util.Objects;
 import com.google.common.collect.Iterators;
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.math.Fraction;
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.properties.FluidPropertyManager;
+import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.ImmutableFluidVolume;
 
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
@@ -101,35 +102,35 @@ public class FluidVolume extends AbstractCollection<FluidContainer> implements F
 	}
 
 	@Override
-	public Fraction drain(FluidVolume volume) {
-		if (volume.fluid != this.fluid) return Fraction.ZERO;
+	public FluidVolume drain(FluidVolume volume) {
+		if (volume.fluid != this.fluid) return ImmutableFluidVolume.EMPTY;
 		Fraction fraction = volume.amount;
 
 		if (fraction.isNegative()) {
 			throw new UnsupportedOperationException("Fraction may not be negative, use merge for adding fluids to a container");
 		}
 
-		if (fraction.getNumerator() == 0) return fraction;
+		if (fraction.getNumerator() == 0) {
+			return ImmutableFluidVolume.EMPTY;
+		}
 
 		if (fraction.isGreaterThanOrEqualTo(this.amount)) {
-			Fraction remove = this.amount;
+			FluidVolume drained = this.copy();
 			this.amount = Fraction.ZERO;
 			this.fluid = Fluids.EMPTY;
 			this.tag = new CompoundTag(); // reset tag as tank is emptied
 			this.resync();
-			return remove;
+			return drained;
 		} else {
 			this.amount = this.amount.subtract(fraction);
 			this.resync();
-			return fraction;
+			return this.of(fraction);
 		}
 	}
 
 	@Override
 	public FluidContainer draw(Fraction fraction) {
-		Fluid fluid = this.getFluid();
-		CompoundTag tag = this.getData();
-		return new FluidVolume(fluid, this.drain(this.of(fraction)), tag);
+		return this.drain(this.of(fraction));
 	}
 
 	@Override
@@ -218,7 +219,7 @@ public class FluidVolume extends AbstractCollection<FluidContainer> implements F
 		FluidVolume volume = (FluidVolume) o;
 
 		if (!(this.fluid == volume.fluid)) return false;
-		if (!Objects.equals(this.amount, volume.amount)) return false;
+		if (!this.amount.equals(volume.amount)) return false;
 		return Objects.equals(this.tag, volume.tag);
 	}
 }

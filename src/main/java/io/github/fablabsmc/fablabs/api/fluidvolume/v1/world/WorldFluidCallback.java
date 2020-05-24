@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.FluidHelper;
-import io.github.fablabsmc.fablabs.api.fluidvolume.v1.containers.BlockFluidContainerProvider;
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.ImmutableFluidVolume;
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.MultiFluidContainer;
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.api.FluidContainer;
@@ -23,6 +22,7 @@ import net.fabricmc.fabric.api.event.EventFactory;
 public interface WorldFluidCallback {
 	Event<WorldFluidCallback> EVENT = EventFactory.createArrayBacked(WorldFluidCallback.class, c -> (world, pos) -> {
 		List<FluidContainer> provider = new ArrayList<>();
+
 		for (WorldFluidCallback callback : c) {
 			FluidContainer container = callback.getContainer(world, pos);
 
@@ -31,9 +31,9 @@ public interface WorldFluidCallback {
 			}
 		}
 
-		if(provider.isEmpty()) {
+		if (provider.isEmpty()) {
 			return ImmutableFluidVolume.EMPTY;
-		} else if(provider.size() == 1) {
+		} else if (provider.size() == 1) {
 			return provider.get(0);
 		} else {
 			return new MultiFluidContainer(provider);

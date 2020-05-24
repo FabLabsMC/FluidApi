@@ -39,8 +39,8 @@ public class ImmutableFluidVolume extends FluidVolume {
 	}
 
 	@Override
-	public Fraction drain(FluidVolume volume) {
-		return Fraction.ZERO;
+	public FluidVolume drain(FluidVolume volume) {
+		return EMPTY;
 	}
 
 	@Override

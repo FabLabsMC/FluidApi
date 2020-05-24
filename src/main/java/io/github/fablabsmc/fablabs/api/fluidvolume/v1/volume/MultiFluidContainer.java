@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.BiFunction;
 
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.math.Fraction;
@@ -68,8 +67,24 @@ public class MultiFluidContainer extends AbstractCollection<FluidContainer> impl
 	}
 
 	@Override
-	public Fraction drain(FluidVolume volume) {
-		return this.combine(volume, FluidContainer::drain);
+	public FluidVolume drain(FluidVolume volume) {
+		if (volume.isEmpty()) {
+			return ImmutableFluidVolume.EMPTY;
+		}
+
+		FluidVolume fluidVolume = volume.copy();
+
+		for (FluidContainer container : this.containers) {
+			FluidVolume fraction = container.drain(volume);
+			this.resync(container);
+			fluidVolume.drain(fraction);
+
+			if (fluidVolume.isEmpty()) {
+				return volume;
+			}
+		}
+
+		return volume.drain(fluidVolume);
 	}
 
 	@Override
@@ -153,8 +168,24 @@ public class MultiFluidContainer extends AbstractCollection<FluidContainer> impl
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
+
 		if (!(o instanceof MultiFluidContainer)) return false;
+
 		MultiFluidContainer that = (MultiFluidContainer) o;
-		return Objects.equals(this.containers, that.containers);
+
+		if (that.containers.size() != this.containers.size()) {
+			return false;
+		}
+
+		Iterator<FluidContainer> iterator = that.containers.iterator();
+		Iterator<FluidContainer> thisIterator = this.containers.iterator();
+
+		while (iterator.hasNext()) {
+			if (!iterator.next().equals(thisIterator.next())) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 }

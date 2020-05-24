@@ -13,6 +13,7 @@ import net.minecraft.text.Text;
 public interface FluidContainer {
 	/**
 	 * same as {@link #merge(FluidVolume)} but it returns the amount of fluid left-over, rather than how much was added.
+	 * no guarantee is given that the passed fluidvolume will not be mutated.
 	 *
 	 * @param container the fluid to add
 	 * @return the amount of fluid not merged
@@ -24,18 +25,21 @@ public interface FluidContainer {
 	/**
 	 * merges the current fluid volume with the target fluid, returning a newly created fluid with the combined properties.
 	 * please do not blindly merge fluids, remember to add proper handling for the return value!
+	 * no guarantee is given that the passed fluidvolume will not be mutated.
 	 *
 	 * @return the amount actually merged
 	 */
 	Fraction merge(FluidVolume volume);
 
 	/**
-	 * drain an amount of fluid from this container.
+	 * drain an amount of a fluid from this container.
+	 * does not respect the nbt data of the passed fluid.
+	 * no guarantee is given that the passed fluidvolume will not be mutated.
 	 *
 	 * @param volume the fluid volume to drain
-	 * @return the amount actually drained
+	 * @return the fluid actually drained
 	 */
-	Fraction drain(FluidVolume volume);
+	FluidVolume drain(FluidVolume volume);
 
 	/**
 	 * draws a wildcard-matched amount of fluid from the container.
