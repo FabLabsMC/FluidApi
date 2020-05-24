@@ -23,7 +23,7 @@ public class BucketItemMixin implements BucketItemAccess, ItemFluidContainerProv
 	}
 
 	@Override
-	public BucketFluidVolume getVolume(ItemStack stack) {
+	public BucketFluidVolume getContainer(ItemStack stack) {
 		return new BucketFluidVolume(stack);
 	}
 }

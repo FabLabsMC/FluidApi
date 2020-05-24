@@ -9,6 +9,7 @@ import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.MultiFluidContainer
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.api.FluidContainer;
 
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 import net.fabricmc.fabric.api.event.Event;
@@ -20,11 +21,11 @@ import net.fabricmc.fabric.api.event.EventFactory;
  * blocks aren't sufficient for whatever reason.
  */
 public interface WorldFluidCallback {
-	Event<WorldFluidCallback> EVENT = EventFactory.createArrayBacked(WorldFluidCallback.class, c -> (world, pos) -> {
+	Event<WorldFluidCallback> EVENT = EventFactory.createArrayBacked(WorldFluidCallback.class, (w, p, f) -> ImmutableFluidVolume.EMPTY,c -> (world, pos, face) -> {
 		List<FluidContainer> provider = new ArrayList<>();
 
 		for (WorldFluidCallback callback : c) {
-			FluidContainer container = callback.getContainer(world, pos);
+			FluidContainer container = callback.getContainer(world, pos, face);
 
 			if (container != null) {
 				provider.add(container);
@@ -45,5 +46,5 @@ public interface WorldFluidCallback {
 	 *
 	 * @return null if none exists
 	 */
-	FluidContainer getContainer(World world, BlockPos position);
+	FluidContainer getContainer(World world, BlockPos position, Direction face);
 }

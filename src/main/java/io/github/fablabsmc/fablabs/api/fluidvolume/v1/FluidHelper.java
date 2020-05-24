@@ -39,7 +39,7 @@ public final class FluidHelper {
 		if (block instanceof BlockFluidContainerProvider) {
 			container = ((BlockFluidContainerProvider) block).getContainer(world, state, pos, side);
 		} else {
-			FluidContainer worldContainer = WorldFluidCallback.EVENT.invoker().getContainer(world, pos);
+			FluidContainer worldContainer = WorldFluidCallback.EVENT.invoker().getContainer(world, pos, side);
 
 			if (worldContainer != null) {
 				container = new MultiFluidContainer(container, worldContainer);
