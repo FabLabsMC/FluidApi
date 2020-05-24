@@ -14,23 +14,29 @@ public class CustomPotionEffectsFluidProperty implements FluidProperty<ListTag> 
 	@Override
 	public ListTag merge(Fluid fluidA, Fraction amountA, Fraction amountB, ListTag a, ListTag b) {
 		ListTag tags = a.copy();
+
 		for (Tag tag : a) {
 			tags.add(tag.copy());
 		}
+
 		return tags;
 	}
 
 	@Override
 	public boolean areCompatible(Fluid fluidA, ListTag a, ListTag b) {
 		IntSet set = new IntOpenHashSet();
+
 		for (Tag tag : a) {
 			CompoundTag effect = (CompoundTag) tag;
 			set.add(effect.getInt("Id"));
 		}
+
 		for (Tag tag : b) {
 			CompoundTag effect = (CompoundTag) tag;
-			if(set.contains(effect.getInt("Id")))
+
+			if (set.contains(effect.getInt("Id"))) {
 				return false;
+			}
 		}
 
 		return true;

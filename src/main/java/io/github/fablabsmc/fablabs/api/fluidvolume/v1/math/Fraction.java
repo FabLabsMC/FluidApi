@@ -24,8 +24,12 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 
 	// should be only called if denom is positive and num & denom are coprime
 	private Fraction(int numerator, int denominator) {
-		if(denominator <= 0) throw new ArithmeticException("denominator cannot be less than 0");
-		if(IntMath.gcd(Math.abs(numerator), denominator) != 1) throw new ArithmeticException("fraction not simplified!");
+		if (denominator <= 0) throw new ArithmeticException("denominator cannot be less than 0");
+
+		if (IntMath.gcd(Math.abs(numerator), denominator) != 1) {
+			throw new ArithmeticException("fraction not simplified!");
+		}
+
 		this.numerator = numerator;
 		this.denominator = denominator;
 	}
