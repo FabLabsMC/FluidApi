@@ -36,7 +36,7 @@ public class CauldronFluidVolume extends FixedFractionFixedSizeFluidVolume {
 	}
 
 	@Override
-	protected void resync() {
+	protected void update() {
 		this.world.setBlockState(this.pos, Blocks.CAULDRON.getDefaultState().with(CauldronBlock.LEVEL, this.amount.getNumerator(3)));
 	}
 }

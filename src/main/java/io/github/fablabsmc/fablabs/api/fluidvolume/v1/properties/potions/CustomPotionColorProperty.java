@@ -8,18 +8,18 @@ import net.minecraft.nbt.IntTag;
 
 public class CustomPotionColorProperty implements FluidProperty<IntTag> {
 	@Override
-	public IntTag merge(Fluid fluidA, Fraction amountA, Fraction amountB, IntTag a, IntTag b) {
-		return IntTag.of(average(a.getInt(), b.getInt()));
+	public IntTag merge(Fluid fluid, Fraction amountA, Fraction amountB, IntTag aData, IntTag bData) {
+		return IntTag.of(average(aData.getInt(), bData.getInt()));
 	}
 
 	@Override
-	public boolean areCompatible(Fluid fluidA, IntTag a, IntTag b) {
+	public boolean areCompatible(Fluid fluid, IntTag aData, IntTag bData) {
 		return true;
 	}
 
 	// "good enough" color blending algorithm
-	private static int average(int a, int b) {
-		return a & 0xFF000000 | avg(a, b, 16) | avg(a, b, 8) | avg(a, b, 0);
+	private static int average(int rgbLeft, int rgbRight) {
+		return rgbLeft & 0xFF000000 | avg(rgbLeft, rgbRight, 16) | avg(rgbLeft, rgbRight, 8) | avg(rgbLeft, rgbRight, 0);
 	}
 
 	private static int avg(int a, int b, int off) {

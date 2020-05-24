@@ -81,14 +81,14 @@ public class FluidVolume extends AbstractCollection<FluidContainer> implements F
 		if (this.isEmpty()) { // empty
 			this.fluid = volume.fluid;
 			this.tag = volume.tag;
-			this.resync();
+			this.update();
 			return this.amount = volume.amount;
 		}
 
 		if (this.fluid == volume.fluid && FluidPropertyManager.INSTANCE.areCompatible(volume.fluid, volume.tag, this.tag)) {
 			this.tag = FluidPropertyManager.INSTANCE.merge(volume.fluid, this.getTotalVolume(), volume.getTotalVolume(), volume.tag, this.tag);
 			this.amount = this.amount.add(volume.amount);
-			this.resync();
+			this.update();
 			return volume.amount;
 		}
 
@@ -98,7 +98,7 @@ public class FluidVolume extends AbstractCollection<FluidContainer> implements F
 	/**
 	 * this method is invoked after any mutations to the volume.
 	 */
-	protected void resync() {
+	protected void update() {
 	}
 
 	@Override
@@ -119,11 +119,11 @@ public class FluidVolume extends AbstractCollection<FluidContainer> implements F
 			this.amount = Fraction.ZERO;
 			this.fluid = Fluids.EMPTY;
 			this.tag = new CompoundTag(); // reset tag as tank is emptied
-			this.resync();
+			this.update();
 			return drained;
 		} else {
 			this.amount = this.amount.subtract(fraction);
-			this.resync();
+			this.update();
 			return this.of(fraction);
 		}
 	}
@@ -192,7 +192,7 @@ public class FluidVolume extends AbstractCollection<FluidContainer> implements F
 
 	public final void fromTag(CompoundTag tag) {
 		String key = tag.getString("fluid");
-		this.fluid = Registry.FLUID.get(new Identifier(key));
+		this.fluid = Registry.FLUID.get(Identifier.tryParse(key));
 		this.amount = Fraction.fromTag(tag);
 		this.tag = tag.getCompound("tag");
 	}

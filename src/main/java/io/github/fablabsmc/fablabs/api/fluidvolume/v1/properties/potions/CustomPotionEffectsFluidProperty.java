@@ -12,10 +12,10 @@ import net.minecraft.nbt.Tag;
 
 public class CustomPotionEffectsFluidProperty implements FluidProperty<ListTag> {
 	@Override
-	public ListTag merge(Fluid fluidA, Fraction amountA, Fraction amountB, ListTag a, ListTag b) {
-		ListTag tags = a.copy();
+	public ListTag merge(Fluid fluid, Fraction amountA, Fraction amountB, ListTag aData, ListTag bData) {
+		ListTag tags = aData.copy();
 
-		for (Tag tag : a) {
+		for (Tag tag : aData) {
 			tags.add(tag.copy());
 		}
 
@@ -23,15 +23,15 @@ public class CustomPotionEffectsFluidProperty implements FluidProperty<ListTag> 
 	}
 
 	@Override
-	public boolean areCompatible(Fluid fluidA, ListTag a, ListTag b) {
+	public boolean areCompatible(Fluid fluid, ListTag aData, ListTag bData) {
 		IntSet set = new IntOpenHashSet();
 
-		for (Tag tag : a) {
+		for (Tag tag : aData) {
 			CompoundTag effect = (CompoundTag) tag;
 			set.add(effect.getInt("Id"));
 		}
 
-		for (Tag tag : b) {
+		for (Tag tag : bData) {
 			CompoundTag effect = (CompoundTag) tag;
 
 			if (set.contains(effect.getInt("Id"))) {

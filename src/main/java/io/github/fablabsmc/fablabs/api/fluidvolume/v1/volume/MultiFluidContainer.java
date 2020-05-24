@@ -55,7 +55,7 @@ public class MultiFluidContainer extends AbstractCollection<FluidContainer> impl
 
 		for (FluidContainer container : this.containers) {
 			Fraction fraction = combiner.apply(container, volume.of(toMerge));
-			this.resync(container);
+			this.update(container);
 			toMerge = toMerge.subtract(fraction);
 			if (toMerge.equals(Fraction.ZERO)) return volume.getTotalVolume();
 		}
@@ -63,7 +63,7 @@ public class MultiFluidContainer extends AbstractCollection<FluidContainer> impl
 		return volume.getTotalVolume().subtract(toMerge);
 	}
 
-	protected void resync(FluidContainer container) {
+	protected void update(FluidContainer container) {
 	}
 
 	@Override
@@ -76,7 +76,7 @@ public class MultiFluidContainer extends AbstractCollection<FluidContainer> impl
 
 		for (FluidContainer container : this.containers) {
 			FluidVolume fraction = container.drain(volume);
-			this.resync(container);
+			this.update(container);
 			fluidVolume.drain(fraction);
 
 			if (fluidVolume.isEmpty()) {
@@ -94,7 +94,7 @@ public class MultiFluidContainer extends AbstractCollection<FluidContainer> impl
 		for (FluidContainer container : this.containers) {
 			if (fraction.equals(Fraction.ZERO)) break;
 			FluidContainer drained = container.draw(fraction);
-			this.resync(container);
+			this.update(container);
 			fraction = fraction.subtract(drained.getTotalVolume());
 			draws.add(drained);
 		}

@@ -14,22 +14,22 @@ public interface FluidProperty<T extends Tag> {
 	/**
 	 * merge the properties of 2 fluids.
 	 *
-	 * @param fluidA  the type of the fluid that is being combined
+	 * @param fluid   the type of the fluid that is being combined
 	 * @param amountA the amount of the original fluid
 	 * @param amountB the amount of the fluid being merged
-	 * @param a       the data of the original fluid
-	 * @param b       the data of the fluid being merged
+	 * @param aData   the data of the original fluid
+	 * @param bData   the data of the fluid being merged
 	 * @return a newly created compound tag representing the merged data
 	 */
-	T merge(Fluid fluidA, Fraction amountA, Fraction amountB, T a, T b);
+	T merge(Fluid fluid, Fraction amountA, Fraction amountB, T aData, T bData);
 
 	/**
 	 * checks if the data between 2 fluids are incompatible with one another.
 	 *
-	 * @param fluidA the fluid
-	 * @param a      the data in original fluid
-	 * @param b      the data in the fluid being merged
+	 * @param fluid the fluid
+	 * @param aData the data in original fluid
+	 * @param bData the data in the fluid being merged
 	 * @return true if the data values are compatible with one another
 	 */
-	boolean areCompatible(Fluid fluidA, T a, T b);
+	boolean areCompatible(Fluid fluid, T aData, T bData);
 }

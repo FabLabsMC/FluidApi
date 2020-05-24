@@ -32,23 +32,23 @@ public class FluidPropertyManager {
 	/**
 	 * merge the nbt data of 2 fluids.
 	 *
-	 * @param fluidA  the type of the fluid that is being combined
+	 * @param fluid  the type of the fluid that is being combined
 	 * @param amountA the amount of the original fluid
 	 * @param amountB the amount of the fluid being merged
-	 * @param a       the data of the original fluid
-	 * @param b       the data of the fluid being merged
+	 * @param aData   the data of the original fluid
+	 * @param bData   the data of the fluid being merged
 	 * @return a newly created compound tag representing the merged data
 	 */
-	public CompoundTag merge(Fluid fluidA, Fraction amountA, Fraction amountB, CompoundTag a, CompoundTag b) {
+	public CompoundTag merge(Fluid fluid, Fraction amountA, Fraction amountB, CompoundTag aData, CompoundTag bData) {
 		CompoundTag tag = new CompoundTag();
 
-		for (String key : a.getKeys()) {
-			this.merge(tag, key, fluidA, amountA, amountB, a, b);
+		for (String key : aData.getKeys()) {
+			this.merge(tag, key, fluid, amountA, amountB, aData, bData);
 		}
 
-		for (String key : b.getKeys()) {
+		for (String key : bData.getKeys()) {
 			if (!tag.contains(key)) {
-				this.merge(tag, key, fluidA, amountA, amountB, a, b);
+				this.merge(tag, key, fluid, amountA, amountB, aData, bData);
 			}
 		}
 
@@ -56,19 +56,19 @@ public class FluidPropertyManager {
 	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	protected void merge(CompoundTag tag, String key, Fluid fluidA, Fraction amountA, Fraction amountB, CompoundTag a, CompoundTag b) {
-		if (a.get(key) == null) {
-			tag.put(key, b.get(key));
+	protected void merge(CompoundTag tag, String key, Fluid fluid, Fraction amountA, Fraction amountB, CompoundTag aData, CompoundTag bData) {
+		if (aData.get(key) == null) {
+			tag.put(key, bData.get(key));
 			return;
 		}
 
-		if (b.get(key) == null) {
-			tag.put(key, a.get(key));
+		if (bData.get(key) == null) {
+			tag.put(key, aData.get(key));
 			return;
 		}
 
 		FluidProperty property = this.properties.get(key);
-		tag.put(key, property.merge(fluidA, amountA, amountB, a.get(key), b.get(key)));
+		tag.put(key, property.merge(fluid, amountA, amountB, aData.get(key), bData.get(key)));
 	}
 
 	/**

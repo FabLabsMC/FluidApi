@@ -8,12 +8,12 @@ import net.minecraft.nbt.StringTag;
 
 public class PotionFluidProperty implements FluidProperty<StringTag> {
 	@Override
-	public StringTag merge(Fluid fluidA, Fraction amountA, Fraction amountB, StringTag a, StringTag b) {
-		return a.copy();
+	public StringTag merge(Fluid fluid, Fraction amountA, Fraction amountB, StringTag aData, StringTag bData) {
+		return aData.copy();
 	}
 
 	@Override
-	public boolean areCompatible(Fluid fluidA, StringTag a, StringTag b) {
-		return a.equals(b);
+	public boolean areCompatible(Fluid fluid, StringTag aData, StringTag bData) {
+		return aData.equals(bData);
 	}
 }
