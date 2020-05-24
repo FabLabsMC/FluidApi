@@ -126,7 +126,7 @@ public class MultiFluidContainer extends AbstractCollection<FluidContainer> impl
 		for (FluidContainer container : this) {
 			if (!container.isEmpty()) {
 				if (!first) {
-					text.append(new TranslatableText("and"));
+					text.append(new TranslatableText("fabric.fluid.and"));
 				} else {
 					first = false;
 				}

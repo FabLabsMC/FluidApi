@@ -1,5 +1,5 @@
 {
-  "and": " and ",
+  "fabric.fluid.and": " and ",
   "text.fluid.plural": "%s buckets of %s",
   "text.fluid.singular": "one bucket of %s",
   "text.fluid.empty": "zero buckets of fluid"
