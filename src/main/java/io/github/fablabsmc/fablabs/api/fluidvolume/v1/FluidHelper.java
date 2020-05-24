@@ -49,7 +49,11 @@ public final class FluidHelper {
 		List<FluidContainer> containers = new ArrayList<>();
 
 		for (Entity entity : world.getEntities((Entity) null, new Box(pos), e -> e instanceof EntityFluidContainerProvider)) {
-			containers.add(((EntityFluidContainerProvider) entity).getContainer(side));
+			FluidContainer fluidContainer = ((EntityFluidContainerProvider) entity).getContainer(side);
+			
+			if(fluidContainer != null) {
+				containers.add(fluidContainer);
+			}
 		}
 
 		if (!containers.isEmpty()) {
