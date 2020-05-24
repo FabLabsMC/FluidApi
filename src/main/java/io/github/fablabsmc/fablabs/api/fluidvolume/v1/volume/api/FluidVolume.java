@@ -16,8 +16,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
-
 /**
  * a mutable representation of a quantity and it's data of a fluid.
  * this class can and should be extended for custom logic when dealing with volume merging.
