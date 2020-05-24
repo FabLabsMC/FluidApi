@@ -1,10 +1,10 @@
 package io.github.fablabsmc.fablabs.api.fluidvolume.v1.math;
 
-import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
-import com.google.common.math.IntMath;
+import com.google.common.math.LongMath;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 
@@ -12,7 +12,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.DynamicSerializable;
 
 /**
- * a number whose value is represented as 2 integers, a numerator and denominator.
+ * a number whose value is represented as 2 long, a numerator and denominator.
  *
  * <p>This object is immutable and self-simplifies on instantiation.
  */
@@ -20,16 +20,16 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 	public static final Fraction ZERO = new Fraction(0, 1);
 	public static final Fraction ONE = new Fraction(1, 1);
 
-	private final int numerator;
-	private final /*Positive*/ int denominator;
+	private final long numerator;
+	private final /*Positive*/ long denominator;
 
 	/**
 	 * Should be only called if denominator is positive and numerator & denominator are coprime.
 	 */
-	private Fraction(int numerator, int denominator) {
+	private Fraction(long numerator, long denominator) {
 		if (denominator <= 0) throw new ArithmeticException("denominator cannot be less than 0");
 
-		if (IntMath.gcd(Math.abs(numerator), denominator) != 1) {
+		if (LongMath.gcd(Math.abs(numerator), denominator) != 1) {
 			throw new ArithmeticException("fraction not simplified!");
 		}
 
@@ -38,40 +38,40 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 	}
 
 	public static Fraction fromTag(CompoundTag tag) {
-		return of(tag.getInt("numerator"), tag.getInt("denominator"));
+		return of(tag.getLong("numerator"), tag.getLong("denominator"));
 	}
 
-	public static Fraction of(int numerator, int denominator) {
+	public static Fraction of(long numerator, long denominator) {
 		if (denominator == 0) throw new ArithmeticException("Zero denominator");
 		return denominator < 0 ? ofValidDenominator(-numerator, -denominator) : ofValidDenominator(numerator, denominator);
 	}
 
 	//TODO: What shortcuts should we have, and how should we name them? This is in a Minecraft context, after all.
-	public static Fraction ofWhole(int numerator) {
+	public static Fraction ofWhole(long numerator) {
 		if (numerator == 0) return ZERO;
 		if (numerator == 1) return ONE;
 		return new Fraction(numerator, 1);
 	}
 
-	public static Fraction ofThirds(int numerator) {
+	public static Fraction ofThirds(long numerator) {
 		return ofValidDenominator(numerator, 3);
 	}
 
-	public static Fraction ofNinths(int numerator) {
+	public static Fraction ofNinths(long numerator) {
 		return ofValidDenominator(numerator, 9);
 	}
 
-	public static Fraction ofThousandths(int numerator) {
+	public static Fraction ofThousandths(long numerator) {
 		return ofValidDenominator(numerator, 1000);
 	}
 
 	// should be only called if denom is positive
 	@VisibleForTesting
-	public static Fraction ofValidDenominator(int numerator, int denominator) {
+	public static Fraction ofValidDenominator(long numerator, long denominator) {
 		if (numerator == 0) return ZERO;
 		if (numerator == denominator) return ONE;
 
-		int gcd = IntMath.gcd(Math.abs(numerator), denominator);
+		long gcd = LongMath.gcd(Math.abs(numerator), denominator);
 
 		return new Fraction(numerator / gcd, denominator / gcd);
 	}
@@ -81,13 +81,13 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 		if ((len = addends.length) == 0) return ZERO;
 		Fraction first = addends[0];
 
-		int denominator = first.denominator;
+		long denominator = first.denominator;
 
 		for (int i = 1; i < len; i++) {
 			denominator = lcm(denominator, addends[i].denominator);
 		}
 
-		int numerator = 0;
+		long numerator = 0;
 
 		for (Fraction addend : addends) {
 			numerator += denominator / addend.denominator * addend.numerator;
@@ -105,22 +105,22 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 		if ((len = factors.length) == 0) return ONE;
 
 		Fraction first = factors[0];
-		int signum;
+		long signum;
 		if ((signum = first.signum()) == 0) return ZERO; // shortcut
-		int numerator = Math.abs(first.numerator);
-		int denominator = first.denominator;
+		long numerator = Math.abs(first.numerator);
+		long denominator = first.denominator;
 
 		for (int i = 1; i < len; i++) {
 			Fraction factor = factors[i];
 			signum *= factor.signum();
 			if (signum == 0) return ZERO; // shortcut
-			int factorDenom = factor.denominator;
-			int factorNum = Math.abs(factor.numerator);
-			int gcd1 = IntMath.gcd(numerator, factorDenom);
-			int gcd2 = IntMath.gcd(denominator, factorNum);
+			long factorDenom = factor.denominator;
+			long factorNum = Math.abs(factor.numerator);
+			long gcd1 = LongMath.gcd(numerator, factorDenom);
+			long gcd2 = LongMath.gcd(denominator, factorNum);
 			numerator = (numerator / gcd1) * (factorNum / gcd2);
 			denominator = (denominator / gcd2) * (factorDenom / gcd1);
-			assert IntMath.gcd(numerator, denominator) == 1;
+			assert LongMath.gcd(numerator, denominator) == 1;
 		}
 
 		// should be simplified by here
@@ -131,8 +131,8 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 		return dividend.divide(divisor);
 	}
 
-	private static int lcm(int a, int b) {
-		return a / IntMath.gcd(a, b) * b; // divide first to prevent overflow
+	private static long lcm(long a, long b) {
+		return a / LongMath.gcd(a, b) * b; // divide first to prevent overflow
 	}
 
 	public static Fraction max(Fraction left, Fraction right) {
@@ -144,7 +144,7 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 	}
 
 	public static <T> Fraction deserialize(Dynamic<T> dynamic) {
-		int[] arr = dynamic.asIntStream().toArray();
+		long[] arr = dynamic.asLongStream().toArray();
 
 		if (arr.length == 0) {
 			return ZERO;
@@ -157,11 +157,11 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 		return of(arr[0], arr[1]);
 	}
 
-	public int getNumerator(int denominator) {
+	public long getNumerator(long denominator) {
 		return this.numerator * (denominator / this.denominator);
 	}
 
-	public int getNumerator() {
+	public long getNumerator() {
 		return this.numerator;
 	}
 
@@ -169,7 +169,7 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 		return this.divide(fraction).getDenominator() == 1;
 	}
 
-	public int getDenominator() {
+	public long getDenominator() {
 		return this.denominator;
 	}
 
@@ -178,8 +178,8 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 	}
 
 	public Fraction multiply(Fraction other) {
-		int gcd1 = IntMath.gcd(Math.abs(this.numerator), other.denominator);
-		int gcd2 = IntMath.gcd(this.denominator, Math.abs(other.numerator));
+		long gcd1 = LongMath.gcd(Math.abs(this.numerator), other.denominator);
+		long gcd2 = LongMath.gcd(this.denominator, Math.abs(other.numerator));
 		// guaranteed simplified
 		return new Fraction(this.signum() * other.signum() * (this.numerator / gcd1) * (other.numerator / gcd2), (this.denominator / gcd2) * (other.denominator / gcd1));
 	}
@@ -197,14 +197,14 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 	}
 
 	public int signum() {
-		return Integer.signum(this.numerator);
+		return Long.signum(this.numerator);
 	}
 
 	public Fraction floorNearest(Fraction fraction) {
 		return fraction.multiply(ofWhole(this.floorDiv(fraction)));
 	}
 
-	public int floorDiv(Fraction fraction) {
+	public long floorDiv(Fraction fraction) {
 		return Math.floorDiv(this.numerator * fraction.denominator, fraction.numerator * this.denominator);
 	}
 
@@ -226,28 +226,28 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 		return new Fraction(-this.numerator, this.denominator);
 	}
 
-	public Fraction multiply(int amount) {
+	public Fraction multiply(long amount) {
 		return of(this.numerator * amount, this.denominator);
 	}
 
 	public Fraction add(Fraction other) {
-		int commonMultiple = lcm(this.denominator, other.denominator);
-		int leftNumerator = commonMultiple / this.denominator * this.numerator;
-		int rightNumerator = commonMultiple / other.denominator * other.numerator;
+		long commonMultiple = lcm(this.denominator, other.denominator);
+		long leftNumerator = commonMultiple / this.denominator * this.numerator;
+		long rightNumerator = commonMultiple / other.denominator * other.numerator;
 		return ofValidDenominator(leftNumerator + rightNumerator, commonMultiple);
 	}
 
 	public Fraction subtract(Fraction other) {
-		int commonMultiple = lcm(this.denominator, other.denominator);
-		int leftNumerator = commonMultiple / this.denominator * this.numerator;
-		int rightNumerator = commonMultiple / other.denominator * other.numerator;
+		long commonMultiple = lcm(this.denominator, other.denominator);
+		long leftNumerator = commonMultiple / this.denominator * this.numerator;
+		long rightNumerator = commonMultiple / other.denominator * other.numerator;
 		return ofValidDenominator(leftNumerator - rightNumerator, commonMultiple);
 	}
 
-	public Fraction floorWithDenominator(int denominator) {
-		Preconditions.checkArgument(denom > 0, "New denominator must be positive!");
-		if (denom == this.getDenominator()) return this;
-		return Fraction.ofValidDenominator(Math.floorDiv(this.numerator * denom, this.denominator), denom);
+	public Fraction floorWithDenominator(long denominator) {
+		Preconditions.checkArgument(denominator > 0, "New denominator must be positive!");
+		if (denominator == this.getDenominator()) return this;
+		return Fraction.ofValidDenominator(Math.floorDiv(this.numerator * denominator, this.denominator), denominator);
 	}
 
 	public boolean isGreaterThan(Fraction fraction) {
@@ -267,8 +267,8 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 
 	@Override
 	public int hashCode() {
-		int result = this.numerator;
-		result = 31 * result + this.denominator;
+		int result = (int) (this.numerator ^ (this.numerator >>> 32));
+		result = 31 * result + (int) (this.denominator ^ (this.denominator >>> 32));
 		return result;
 	}
 
@@ -282,29 +282,29 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 
 	@Override
 	public String toString() {
-		int whole = this.numerator / this.denominator;
-		int part = this.numerator % this.denominator;
+		long whole = this.numerator / this.denominator;
+		long part = this.numerator % this.denominator;
 		return whole + " " + part + "/" + this.denominator;
 	}
 
 	public void toTag(CompoundTag tag) {
-		tag.putInt("numerator", this.numerator);
-		tag.putInt("denominator", this.denominator);
+		tag.putLong("numerator", this.numerator);
+		tag.putLong("denominator", this.denominator);
 	}
 
 	@Override
 	public int intValue() {
-		return this.numerator / this.denominator;
+		return (int) this.longValue();
 	}
 
 	@Override
 	public <T> T serialize(DynamicOps<T> ops) {
-		return ops.createIntList(IntStream.of(this.numerator, this.denominator));
+		return ops.createLongList(LongStream.of(this.numerator, this.denominator));
 	}
 
 	@Override
 	public long longValue() {
-		return this.intValue();
+		return (int) (this.numerator / this.denominator);
 	}
 
 	@Override

@@ -5,13 +5,12 @@ import com.google.gson.JsonPrimitive;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.JsonOps;
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.math.Fraction;
-
-import net.minecraft.datafixer.NbtOps;
-import net.minecraft.nbt.IntArrayTag;
-import net.minecraft.util.Util;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import net.minecraft.datafixer.NbtOps;
+import net.minecraft.nbt.LongArrayTag;
+import net.minecraft.util.Util;
 
 public class FractionTest {
 	@Test
@@ -53,9 +52,9 @@ public class FractionTest {
 
 	@Test
 	public void testDeserialization() {
-		IntArrayTag intArrTag = new IntArrayTag(new int[] {1, 2});
-		Assertions.assertEquals(Fraction.ofValidDenominator(1, 2), Fraction.deserialize(new Dynamic<>(NbtOps.INSTANCE, intArrTag)));
-		Assertions.assertEquals(Fraction.ofValidDenominator(1, 2), Fraction.deserialize(new Dynamic<>(NbtOps.INSTANCE, new IntArrayTag(new int[] {4, 8}))));
+		LongArrayTag longTag = new LongArrayTag(new long[] {1, 2});
+		Assertions.assertEquals(Fraction.ofValidDenominator(1, 2), Fraction.deserialize(new Dynamic<>(NbtOps.INSTANCE, longTag)));
+		Assertions.assertEquals(Fraction.ofValidDenominator(1, 2), Fraction.deserialize(new Dynamic<>(NbtOps.INSTANCE, new LongArrayTag(new long[] {4, 8}))));
 		Assertions.assertEquals(Fraction.ofValidDenominator(7, 10), Fraction.deserialize(new Dynamic<>(JsonOps.INSTANCE, Util.make(new JsonArray(), array -> {
 			array.add(42);
 			array.add(60);
@@ -72,7 +71,7 @@ public class FractionTest {
 
 	@Test
 	public void testSerialization() {
-		Assertions.assertEquals(new IntArrayTag(new int[]{1, 2}), Fraction.of(4, 8).serialize(NbtOps.INSTANCE));
+		Assertions.assertEquals(new LongArrayTag(new long[]{1, 2}), Fraction.of(4, 8).serialize(NbtOps.INSTANCE));
 		Assertions.assertEquals(Util.make(new JsonArray(), array -> {
 			array.add(2);
 			array.add(5);
@@ -81,7 +80,7 @@ public class FractionTest {
 			array.add(1);
 			array.add(1);
 		}), Fraction.ONE.serialize(JsonOps.INSTANCE));
-		Assertions.assertEquals(new IntArrayTag(new int[]{0, 1}), Fraction.ZERO.serialize(NbtOps.INSTANCE));
+		Assertions.assertEquals(new LongArrayTag(new long[]{0, 1}), Fraction.ZERO.serialize(NbtOps.INSTANCE));
 	}
 
 	@Test
