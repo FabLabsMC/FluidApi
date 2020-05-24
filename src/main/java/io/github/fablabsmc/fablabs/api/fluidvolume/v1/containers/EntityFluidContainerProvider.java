@@ -9,6 +9,7 @@ import net.minecraft.util.math.Direction;
  */
 public interface EntityFluidContainerProvider {
 	/**
+	 * @param face the side in which the entity is trying to be accessed from
 	 * @return the fluid container for this entity
 	 */
 	FluidContainer getContainer(Direction face);

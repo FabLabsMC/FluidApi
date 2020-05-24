@@ -3,13 +3,13 @@ package io.github.fablabsmc.fablabs.api.fluidvolume.v1;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.github.fablabsmc.fablabs.api.fluidvolume.v1.containers.EntityFluidContainerProvider;
-import io.github.fablabsmc.fablabs.api.fluidvolume.v1.containers.ItemFluidContainerProvider;
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.containers.BlockFluidContainerProvider;
+import io.github.fablabsmc.fablabs.api.fluidvolume.v1.containers.EntityFluidContainerProvider;
+import io.github.fablabsmc.fablabs.api.fluidvolume.v1.world.WorldFluidCallback;
+import io.github.fablabsmc.fablabs.api.fluidvolume.v1.containers.ItemFluidContainerProvider;
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.ImmutableFluidVolume;
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.MultiFluidContainer;
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.api.FluidContainer;
-import io.github.fablabsmc.fablabs.api.fluidvolume.v1.world.WorldFluidCallback;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -27,7 +27,7 @@ public final class FluidHelper {
 	 *
 	 * @param world the world
 	 * @param pos   the position
-	 * @param side  the side of the block to access
+	 * @param side  the side of the block/entity to access
 	 * @return ImmutableFluidVolume#EMPTY if no fluid container exists for the given side
 	 */
 	public static FluidContainer getContainer(World world, BlockPos pos, Direction side) {
@@ -71,7 +71,7 @@ public final class FluidHelper {
 		Item item = stack.getItem();
 
 		if (item instanceof ItemFluidContainerProvider) {
-			FluidContainer container = ((ItemFluidContainerProvider) item).getVolume(stack);
+			FluidContainer container = ((ItemFluidContainerProvider) item).getContainer(stack);
 
 			if (container != null) {
 				return container;

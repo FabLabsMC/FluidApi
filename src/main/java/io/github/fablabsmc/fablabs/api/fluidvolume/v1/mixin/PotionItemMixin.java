@@ -11,7 +11,7 @@ import net.minecraft.item.PotionItem;
 @Mixin(PotionItem.class) // potions hold fluid
 public class PotionItemMixin implements ItemFluidContainerProvider {
 	@Override
-	public FluidContainer getVolume(ItemStack stack) {
+	public FluidContainer getContainer(ItemStack stack) {
 		return new PotionFluidVolume(stack);
 	}
 }

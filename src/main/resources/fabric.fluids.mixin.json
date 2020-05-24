@@ -1,12 +1,12 @@
 {
   "required": true,
-  "package": "io.github.fablabsmc.fablabs.api.fluidvolume.v1.mixin",
+  "package": "io.github.fablabs.fluidapi.v1.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "BucketItemMixin",
-    "CauldronBlockMixin",
-    "GlassBottleItemMixin",
-    "PotionItemMixin"
+    "io.github.fablabsmc.fablabs.api.fluidvolume.mixin.BucketItemMixin",
+    "io.github.fablabsmc.fablabs.api.fluidvolume.mixin.CauldronBlockMixin",
+    "io.github.fablabsmc.fablabs.api.fluidvolume.mixin.GlassBottleItemMixin",
+    "io.github.fablabsmc.fablabs.api.fluidvolume.mixin.PotionItemMixin"
   ],
   "injectors": {
     "defaultRequire": 1

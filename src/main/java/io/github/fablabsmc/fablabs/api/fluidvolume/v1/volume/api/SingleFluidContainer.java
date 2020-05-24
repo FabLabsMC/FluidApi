@@ -1,8 +1,5 @@
 package io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.api;
 
-import static io.github.fablabsmc.fablabs.api.fluidvolume.v1.math.Fraction.ONE;
-import static io.github.fablabsmc.fablabs.api.fluidvolume.v1.math.Fraction.ZERO;
-
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.math.Fraction;
 
 import net.minecraft.fluid.Fluid;
@@ -36,9 +33,9 @@ public interface SingleFluidContainer extends FluidContainer {
 		Fraction total = this.getTotalVolume();
 		Identifier fluid = Registry.FLUID.getId(this.getFluid());
 
-		if (total.equals(ONE)) {
+		if (total.equals(Fraction.ONE)) {
 			return new TranslatableText("text.fluid.singular", total, new TranslatableText("fluid." + fluid.getNamespace() + "." + fluid.getPath()));
-		} else if (total.equals(ZERO)) {
+		} else if (total.equals(Fraction.ZERO)) {
 			return new TranslatableText("text.fluid.empty");
 		} else {
 			return new TranslatableText("text.fluid.plural", new TranslatableText("fluid." + fluid.getNamespace() + "." + fluid.getPath()));

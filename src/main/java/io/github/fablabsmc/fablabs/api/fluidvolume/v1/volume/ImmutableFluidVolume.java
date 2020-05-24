@@ -1,8 +1,8 @@
 package io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume;
 
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.math.Fraction;
-import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.api.FluidContainer;
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.api.FluidVolume;
+import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.api.FluidContainer;
 
 import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.CompoundTag;

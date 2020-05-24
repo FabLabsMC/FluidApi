@@ -12,7 +12,7 @@ import net.minecraft.item.ItemStack;
 // glass bottles do not hold fluid, but they can once they are filled, however they technically become a different item
 public class GlassBottleItemMixin implements ItemFluidContainerProvider {
 	@Override
-	public FluidContainer getVolume(ItemStack stack) {
+	public FluidContainer getContainer(ItemStack stack) {
 		return ImmutableFluidVolume.EMPTY;
 	}
 }

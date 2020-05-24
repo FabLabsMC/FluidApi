@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.math.Fraction;
-import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.api.FluidContainer;
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.api.FluidVolume;
+import io.github.fablabsmc.fablabs.api.fluidvolume.v1.volume.api.FluidContainer;
 
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;

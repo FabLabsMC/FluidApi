@@ -17,5 +17,5 @@ public interface ItemFluidContainerProvider {
 	 * @param stack the itemstack
 	 * @return an instance of the fluid container, or null if none found
 	 */
-	FluidContainer getVolume(ItemStack stack);
+	FluidContainer getContainer(ItemStack stack);
 }
