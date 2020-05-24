@@ -12,8 +12,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.DynamicSerializable;
 
 /**
- * a number who's value is represented as 2 integers, it's numerator and denominator
- * this class is immutable and self-simplifies on instantiation.
+ * a number whose value is represented as 2 integers, a numerator and denominator.
+ *
+ * <p>This object is immutable and self-simplifies on instantiation.
  */
 public final class Fraction extends Number implements Comparable<Fraction>, DynamicSerializable {
 	public static final Fraction ZERO = new Fraction(0, 1);
@@ -22,7 +23,9 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 	private final int numerator;
 	private final /*Positive*/ int denominator;
 
-	// should be only called if denom is positive and num & denom are coprime
+	/**
+	 * Should be only called if denominator is positive and numerator & denominator are coprime.
+	 */
 	private Fraction(int numerator, int denominator) {
 		if (denominator <= 0) throw new ArithmeticException("denominator cannot be less than 0");
 
@@ -241,7 +244,7 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 		return ofValidDenominator(leftNumerator - rightNumerator, commonMultiple);
 	}
 
-	public Fraction floorWithDenominator(int denom) {
+	public Fraction floorWithDenominator(int denominator) {
 		Preconditions.checkArgument(denom > 0, "New denominator must be positive!");
 		if (denom == this.getDenominator()) return this;
 		return Fraction.ofValidDenominator(Math.floorDiv(this.numerator * denom, this.denominator), denom);
