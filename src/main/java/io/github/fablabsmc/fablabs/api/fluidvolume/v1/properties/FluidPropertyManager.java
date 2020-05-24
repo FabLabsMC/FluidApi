@@ -1,12 +1,21 @@
 package io.github.fablabsmc.fablabs.api.fluidvolume.v1.properties;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import io.github.fablabsmc.fablabs.api.fluidvolume.v1.math.Fraction;
+import io.github.fablabsmc.fablabs.api.fluidvolume.v1.properties.potions.CustomPotionColorProperty;
+import io.github.fablabsmc.fablabs.api.fluidvolume.v1.properties.potions.PotionFluidProperty;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.IntTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 
 /**
@@ -14,6 +23,11 @@ import net.minecraft.nbt.Tag;
  */
 public class FluidPropertyManager {
 	public static final FluidPropertyManager INSTANCE = new FluidPropertyManager();
+	static {
+		INSTANCE.register("CustomPotionEffects", new CustomPotionColorProperty());
+		INSTANCE.register("Potion", new PotionFluidProperty());
+		INSTANCE.register("CustomPotionColor", new CustomPotionColorProperty());
+	}
 	private final Map<String, FluidProperty<?>> properties = new HashMap<>();
 
 	public <T extends Tag> void register(String id, FluidProperty<T> property) {
@@ -48,6 +62,16 @@ public class FluidPropertyManager {
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	protected void merge(CompoundTag tag, String key, Fluid fluidA, Fraction amountA, Fraction amountB, CompoundTag a, CompoundTag b) {
+		if(a.get(key) == null) {
+			tag.put(key, b.get(key));
+			return;
+		}
+
+		if(b.get(key) == null) {
+			tag.put(key, a.get(key));
+			return;
+		}
+
 		FluidProperty property = this.properties.get(key);
 		tag.put(key, property.merge(fluidA, amountA, amountB, a.get(key), b.get(key)));
 	}
