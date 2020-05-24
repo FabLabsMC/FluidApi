@@ -244,7 +244,7 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 		return ofValidDenominator(leftNumerator - rightNumerator, commonMultiple);
 	}
 
-	public Fraction floorWithDenominator(int denom) {
+	public Fraction floorWithDenominator(int denominator) {
 		Preconditions.checkArgument(denom > 0, "New denominator must be positive!");
 		if (denom == this.getDenominator()) return this;
 		return Fraction.ofValidDenominator(Math.floorDiv(this.numerator * denom, this.denominator), denom);
