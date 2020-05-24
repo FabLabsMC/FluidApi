@@ -13,7 +13,8 @@ import net.minecraft.util.DynamicSerializable;
 
 /**
  * a number whose value is represented as 2 integers, a numerator and denominator.
- * this class is immutable and self-simplifies on instantiation.
+ *
+ * <p>This object is immutable and self-simplifies on instantiation.
  */
 public final class Fraction extends Number implements Comparable<Fraction>, DynamicSerializable {
 	public static final Fraction ZERO = new Fraction(0, 1);
