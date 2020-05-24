@@ -8,7 +8,7 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.CompoundTag;
 
 /**
- * a fluid volume who's fluid, contents, and NBT cannot change.
+ * a fluid volume whose fluid, contents, and NBT cannot change.
  */
 public class ImmutableFluidVolume extends FluidVolume {
 	public static final FluidVolume EMPTY = new ImmutableFluidVolume();
