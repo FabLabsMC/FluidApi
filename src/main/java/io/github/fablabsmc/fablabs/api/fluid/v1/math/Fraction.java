@@ -1,6 +1,7 @@
 package io.github.fablabsmc.fablabs.api.fluid.v1.math;
 
-import java.util.stream.LongStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
@@ -141,20 +142,6 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 
 	public static Fraction min(Fraction left, Fraction right) {
 		return left.compareTo(right) < 0 ? left : right;
-	}
-
-	public static <T> Fraction deserialize(Dynamic<T> dynamic) {
-		long[] arr = dynamic.asLongStream().toArray();
-
-		if (arr.length == 0) {
-			return ZERO;
-		}
-
-		if (arr.length == 1) {
-			return ofWhole(arr[0]);
-		}
-
-		return of(arr[0], arr[1]);
 	}
 
 	public long getNumerator(long denominator) {
@@ -298,11 +285,6 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 	}
 
 	@Override
-	public <T> T serialize(DynamicOps<T> ops) {
-		return ops.createLongList(LongStream.of(numerator, denominator));
-	}
-
-	@Override
 	public long longValue() {
 		return (int) (numerator / denominator);
 	}
@@ -310,5 +292,21 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 	@Override
 	public float floatValue() {
 		return (float) doubleValue();
+	}
+
+	@Override
+	public <T> T serialize(DynamicOps<T> ops) {
+		final Map<T, T> value = new HashMap<>();
+		value.put(ops.createString("numerator"), ops.createLong(this.numerator));
+		value.put(ops.createString("denominator"), ops.createLong(this.denominator));
+
+		return ops.createMap(value);
+	}
+
+	public static <T> Fraction deserialize(Dynamic<T> dynamic) {
+		final long numerator = dynamic.get("numerator").asLong(0);
+		final long denominator = dynamic.get("denominator").asLong(1);
+
+		return of(numerator, denominator);
 	}
 }
