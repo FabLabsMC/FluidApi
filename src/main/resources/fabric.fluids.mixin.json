@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "io.github.fablabsmc.fablabs.api.fluidvolume.mixin",
+  "package": "io.github.fablabsmc.fablabs.mixin.fluidvolume",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "BucketItemMixin",
