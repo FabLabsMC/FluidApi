@@ -23,6 +23,9 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+
 /**
  * a mutable representation of a quantity and it's data of a fluid.
  * this class can and should be extended for custom logic when dealing with volume merging.
@@ -85,17 +88,17 @@ public class FluidVolume extends AbstractCollection<FluidContainer> implements F
 			return Fraction.ZERO;
 		}
 
-		if (this.isEmpty()) { // empty
-			this.fluid = volume.fluid;
-			this.tag = volume.tag;
-			this.update();
-			return this.amount = volume.amount;
+		if (isEmpty()) { // empty
+			fluid = volume.fluid;
+			tag = volume.tag;
+			update();
+			return amount = volume.amount;
 		}
 
-		if (this.fluid == volume.fluid && FluidPropertyManager.INSTANCE.areCompatible(volume.fluid, volume.tag, this.tag)) {
-			this.tag = FluidPropertyManager.INSTANCE.merge(volume.fluid, this.getTotalVolume(), volume.getTotalVolume(), volume.tag, this.tag);
-			this.amount = this.amount.add(volume.amount);
-			this.update();
+		if (fluid == volume.fluid && FluidPropertyManager.INSTANCE.areCompatible(volume.fluid, volume.tag, tag)) {
+			tag = FluidPropertyManager.INSTANCE.merge(volume.fluid, getTotalVolume(), volume.getTotalVolume(), volume.tag, tag);
+			amount = amount.add(volume.amount);
+			update();
 			return volume.amount;
 		}
 
@@ -110,7 +113,7 @@ public class FluidVolume extends AbstractCollection<FluidContainer> implements F
 
 	@Override
 	public FluidVolume drain(FluidVolume volume) {
-		if (volume.fluid != this.fluid) return ImmutableFluidVolume.EMPTY;
+		if (volume.fluid != fluid) return ImmutableFluidVolume.EMPTY;
 		Fraction fraction = volume.amount;
 
 		if (fraction.isNegative()) {
@@ -121,23 +124,23 @@ public class FluidVolume extends AbstractCollection<FluidContainer> implements F
 			return ImmutableFluidVolume.EMPTY;
 		}
 
-		if (fraction.isGreaterThanOrEqualTo(this.amount)) {
-			FluidVolume drained = this.copy();
-			this.amount = Fraction.ZERO;
-			this.fluid = Fluids.EMPTY;
-			this.tag = new CompoundTag(); // reset tag as tank is emptied
-			this.update();
+		if (fraction.isGreaterThanOrEqualTo(amount)) {
+			FluidVolume drained = copy();
+			amount = Fraction.ZERO;
+			fluid = Fluids.EMPTY;
+			tag = new CompoundTag(); // reset tag as tank is emptied
+			update();
 			return drained;
 		} else {
-			this.amount = this.amount.subtract(fraction);
-			this.update();
-			return this.of(fraction);
+			amount = amount.subtract(fraction);
+			update();
+			return of(fraction);
 		}
 	}
 
 	@Override
 	public FluidContainer draw(Fraction fraction) {
-		return this.drain(this.of(fraction));
+		return drain(of(fraction));
 	}
 
 	@Override
@@ -147,25 +150,26 @@ public class FluidVolume extends AbstractCollection<FluidContainer> implements F
 
 	@Override
 	public Fraction getTotalVolume() {
-		return this.amount;
+		return amount;
 	}
 
 	public FluidVolume of(Fraction amount) {
-		if (amount.equals(Fraction.ZERO) || this.fluid == Fluids.EMPTY) {
-			return new FluidVolume(Fluids.EMPTY, Fraction.ZERO, this.tag);
+		if (amount.equals(Fraction.ZERO) || fluid == Fluids.EMPTY) {
+			return new FluidVolume(Fluids.EMPTY, Fraction.ZERO, tag);
 		}
 
-		return new FluidVolume(this.fluid, amount, this.tag);
+		return new FluidVolume(fluid, amount, tag);
 	}
 
 	@Override
 	public Fluid getFluid() {
-		return this.fluid;
+		return fluid;
 	}
 
+	//TODO: should this be exposed and mutable?
 	@Override
 	public CompoundTag getData() {
-		return this.tag;
+		return tag;
 	}
 
 	/**
@@ -174,7 +178,7 @@ public class FluidVolume extends AbstractCollection<FluidContainer> implements F
 	 * @return a newly created object
 	 */
 	public FluidVolume copy() {
-		return new FluidVolume(this.fluid, this.amount /*amount is immutable*/, this.tag.copy());
+		return new FluidVolume(fluid, amount /*amount is immutable*/, tag.copy());
 	}
 
 	@Override
@@ -189,15 +193,16 @@ public class FluidVolume extends AbstractCollection<FluidContainer> implements F
 
 	@Override
 	public boolean isEmpty() {
-		return this.fluid == null || this.fluid == Fluids.EMPTY || this.amount.getNumerator() == 0;
+		return fluid == null || fluid == Fluids.EMPTY || amount.getNumerator() == 0;
 	}
 
 	@Override
 	public String toString() {
-		return "FluidVolume{" + "fluid=" + this.fluid + ", amount=" + this.amount + ", tag=" + this.tag + '}';
+		return "FluidVolume{" + "fluid=" + fluid + ", amount=" + amount + ", tag=" + tag + '}';
 	}
 
 	//TODO: FluidTooltipCallback? Just having properties should be fine, right?
+	@Environment(EnvType.CLIENT)
 	public List<Text> getTooltip() {
 		List<Text> tooltip = new ArrayList<>();
 		tooltip.add(new TranslatableText(Util.createTranslationKey("fluid", Registry.FLUID.getId(fluid))));
@@ -209,22 +214,22 @@ public class FluidVolume extends AbstractCollection<FluidContainer> implements F
 
 	public final void fromTag(CompoundTag tag) {
 		String key = tag.getString("fluid");
-		this.fluid = Registry.FLUID.get(Identifier.tryParse(key));
-		this.amount = Fraction.fromTag(tag);
-		this.tag = tag.getCompound("tag");
+		fluid = Registry.FLUID.get(Identifier.tryParse(key));
+		amount = Fraction.fromTag(tag);
+		tag = tag.getCompound("tag");
 	}
 
 	public final void toTag(CompoundTag tag) {
-		tag.putString("fluid", Registry.FLUID.getId(this.fluid).toString());
-		tag.put("tag", this.tag);
-		this.amount.toTag(tag);
+		tag.putString("fluid", Registry.FLUID.getId(fluid).toString());
+		tag.put("tag", tag);
+		amount.toTag(tag);
 	}
 
 	@Override
 	public int hashCode() {
-		int result = this.fluid != null ? this.fluid.hashCode() : 0;
-		result = 31 * result + (this.amount != null ? this.amount.hashCode() : 0);
-		result = 31 * result + (this.tag != null ? this.tag.hashCode() : 0);
+		int result = fluid != null ? fluid.hashCode() : 0;
+		result = 31 * result + (amount != null ? amount.hashCode() : 0);
+		result = 31 * result + (tag != null ? tag.hashCode() : 0);
 		return result;
 	}
 
@@ -235,8 +240,8 @@ public class FluidVolume extends AbstractCollection<FluidContainer> implements F
 
 		FluidVolume volume = (FluidVolume) o;
 
-		if (!(this.fluid == volume.fluid)) return false;
-		if (!this.amount.equals(volume.amount)) return false;
-		return Objects.equals(this.tag, volume.tag);
+		if (!(fluid == volume.fluid)) return false;
+		if (!amount.equals(volume.amount)) return false;
+		return Objects.equals(tag, volume.tag);
 	}
 }

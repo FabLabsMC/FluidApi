@@ -47,17 +47,17 @@ public class FixedFractionFixedSizeFluidVolume extends SimpleFixedSizedFluidVolu
 
 	@Override
 	public Fraction merge(FluidVolume volume) {
-		FluidVolume floor = volume.of(volume.getTotalVolume().floorNearest(this.fraction));
+		FluidVolume floor = volume.of(volume.getTotalVolume().floorNearest(fraction));
 		return super.merge(floor);
 	}
 
 	@Override
 	public FluidVolume drain(FluidVolume volume) {
-		return super.drain(volume.of(volume.getTotalVolume().floorNearest(this.fraction)));
+		return super.drain(volume.of(volume.getTotalVolume().floorNearest(fraction)));
 	}
 
 	@Override
 	public FluidContainer draw(Fraction fraction) {
-		return super.draw(fraction.floorNearest(this.fraction));
+		return super.draw(fraction.floorNearest(fraction));
 	}
 }

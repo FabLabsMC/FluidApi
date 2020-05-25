@@ -53,7 +53,7 @@ public class MultiFluidContainer extends AbstractCollection<FluidContainer> impl
 			return Fraction.ZERO;
 		}
 
-		for (FluidContainer container : this.containers) {
+		for (FluidContainer container : containers) {
 			Fraction fraction = combiner.apply(container, volume.of(toMerge));
 			this.update(container);
 			toMerge = toMerge.subtract(fraction);
@@ -74,7 +74,7 @@ public class MultiFluidContainer extends AbstractCollection<FluidContainer> impl
 
 		FluidVolume fluidVolume = volume.copy();
 
-		for (FluidContainer container : this.containers) {
+		for (FluidContainer container : containers) {
 			FluidVolume fraction = container.drain(volume);
 			this.update(container);
 			fluidVolume.drain(fraction);
@@ -91,7 +91,7 @@ public class MultiFluidContainer extends AbstractCollection<FluidContainer> impl
 	public FluidContainer draw(Fraction fraction) {
 		List<FluidContainer> draws = new ArrayList<>();
 
-		for (FluidContainer container : this.containers) {
+		for (FluidContainer container : containers) {
 			if (fraction.equals(Fraction.ZERO)) break;
 			FluidContainer drained = container.draw(fraction);
 			this.update(container);
@@ -104,14 +104,14 @@ public class MultiFluidContainer extends AbstractCollection<FluidContainer> impl
 
 	@Override
 	public Collection<FluidContainer> subContainers() {
-		return this.containers;
+		return containers;
 	}
 
 	@Override
 	public Fraction getTotalVolume() {
 		Fraction fraction = Fraction.ZERO;
 
-		for (FluidContainer container : this.containers) {
+		for (FluidContainer container : containers) {
 			fraction = fraction.add(container.getTotalVolume());
 		}
 
@@ -140,28 +140,31 @@ public class MultiFluidContainer extends AbstractCollection<FluidContainer> impl
 
 	@Override
 	public Iterator<FluidContainer> iterator() {
-		return this.containers.iterator();
+		return containers.iterator();
 	}
 
 	@Override
 	public int size() {
-		return this.containers.size();
+		return containers.size();
 	}
 
 	@Override
 	public boolean isEmpty() {
-		return this.containers.stream().allMatch(FluidContainer::isEmpty);
+		for (FluidContainer container : this) {
+			if (!container.isEmpty()) return false;
+		}
+		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "MultiFluidContainer{" + "containers=" + this.containers + '}';
+		return "MultiFluidContainer{" + "containers=" + containers + '}';
 	}
 
 	@Override
 	public int hashCode() {
-		int result = this.containers != null ? this.containers.hashCode() : 0;
-		result = 31 * result + this.containers.hashCode();
+		int result = containers != null ? containers.hashCode() : 0;
+		result = 31 * result + containers.hashCode();
 		return result;
 	}
 
@@ -173,12 +176,12 @@ public class MultiFluidContainer extends AbstractCollection<FluidContainer> impl
 
 		MultiFluidContainer that = (MultiFluidContainer) o;
 
-		if (that.containers.size() != this.containers.size()) {
+		if (that.containers.size() != containers.size()) {
 			return false;
 		}
 
 		Iterator<FluidContainer> iterator = that.containers.iterator();
-		Iterator<FluidContainer> thisIterator = this.containers.iterator();
+		Iterator<FluidContainer> thisIterator = containers.iterator();
 
 		while (iterator.hasNext()) {
 			if (!iterator.next().equals(thisIterator.next())) {

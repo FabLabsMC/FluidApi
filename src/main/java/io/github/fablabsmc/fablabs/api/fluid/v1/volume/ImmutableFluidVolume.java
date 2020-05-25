@@ -50,6 +50,6 @@ public class ImmutableFluidVolume extends FluidVolume {
 
 	@Override
 	public CompoundTag getData() {
-		return this.tag.copy();
+		return tag.copy();
 	}
 }

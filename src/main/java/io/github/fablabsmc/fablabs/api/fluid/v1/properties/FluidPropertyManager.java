@@ -14,6 +14,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.text.Text;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+
 /**
  * A utility class used for describing the behavior for merging.
  */
@@ -29,7 +32,8 @@ public class FluidPropertyManager {
 	private final Map<String, FluidProperty<?>> properties = new HashMap<>();
 
 	public <T extends Tag> void register(String id, FluidProperty<T> property) {
-		this.properties.put(id, property);
+		if (properties.containsKey(id)) throw new IllegalArgumentException("Property already defined with name " + id);
+		properties.put(id, property);
 	}
 
 	/**
@@ -46,12 +50,12 @@ public class FluidPropertyManager {
 		CompoundTag tag = new CompoundTag();
 
 		for (String key : aData.getKeys()) {
-			this.merge(tag, key, fluid, amountA, amountB, aData, bData);
+			merge(tag, key, fluid, amountA, amountB, aData, bData);
 		}
 
 		for (String key : bData.getKeys()) {
 			if (!tag.contains(key)) {
-				this.merge(tag, key, fluid, amountA, amountB, aData, bData);
+				merge(tag, key, fluid, amountA, amountB, aData, bData);
 			}
 		}
 
@@ -70,7 +74,7 @@ public class FluidPropertyManager {
 			return;
 		}
 
-		FluidProperty property = this.properties.get(key);
+		FluidProperty property = properties.get(key);
 		tag.put(key, property.merge(fluid, amountA, amountB, aData.get(key), bData.get(key)));
 	}
 
@@ -84,13 +88,13 @@ public class FluidPropertyManager {
 	 */
 	public boolean areCompatible(Fluid fluidA, CompoundTag a, CompoundTag b) {
 		for (String key : a.getKeys()) {
-			if (this.areIncompatible(key, fluidA, a, b)) {
+			if (areIncompatible(key, fluidA, a, b)) {
 				return false;
 			}
 		}
 
 		for (String key : b.getKeys()) {
-			if (this.areIncompatible(key, fluidA, a, b)) {
+			if (areIncompatible(key, fluidA, a, b)) {
 				return false;
 			}
 		}
@@ -100,17 +104,18 @@ public class FluidPropertyManager {
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	protected boolean areIncompatible(String key, Fluid fluidA, CompoundTag a, CompoundTag b) {
-		FluidProperty property = this.properties.get(key);
+		FluidProperty property = properties.get(key);
 		return !property.areCompatible(fluidA, a.get(key), b.get(key));
 	}
 
+	@Environment(EnvType.CLIENT)
 	@SuppressWarnings("unchecked")
 	public <T extends Tag> List<Text> getPropertyTooltip(CompoundTag tag) {
 		List<Text> tooltip = new ArrayList<>();
 
 		for (String key : tag.getKeys()) {
 			FluidProperty<T> property = (FluidProperty<T>) properties.get(key);
-			tooltip.add(property.toText((T) tag.get(key)));
+			tooltip.addAll(property.getTooltipText((T) tag.get(key)));
 		}
 
 		return tooltip;

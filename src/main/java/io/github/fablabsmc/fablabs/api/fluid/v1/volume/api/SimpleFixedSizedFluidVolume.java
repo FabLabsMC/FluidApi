@@ -36,17 +36,17 @@ public class SimpleFixedSizedFluidVolume extends FluidVolume implements FixedSiz
 
 	@Override
 	public Fraction merge(FluidVolume volume) {
-		if (this.max.isGreaterThan(this.getTotalVolume().add(volume.getTotalVolume()))) {
+		if (max.isGreaterThan(getTotalVolume().add(volume.getTotalVolume()))) {
 			return super.merge(volume); // underfill
 		} else {
 			FluidVolume copy = volume.copy();
-			copy.amount = this.max.subtract(this.amount);
+			copy.amount = max.subtract(amount);
 			return super.merge(copy); // overfill
 		}
 	}
 
 	@Override
 	public Fraction getMax() {
-		return this.max;
+		return max;
 	}
 }

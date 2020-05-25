@@ -30,8 +30,8 @@ public interface SingleFluidContainer extends FluidContainer {
 
 	@Override
 	default Text toText() {
-		Fraction total = this.getTotalVolume();
-		Identifier fluid = Registry.FLUID.getId(this.getFluid());
+		Fraction total = getTotalVolume();
+		Identifier fluid = Registry.FLUID.getId(getFluid());
 
 		if (total.equals(Fraction.ONE)) {
 			return new TranslatableText("text.fluid.singular", total, new TranslatableText("fluid." + fluid.getNamespace() + "." + fluid.getPath()));

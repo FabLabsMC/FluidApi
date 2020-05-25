@@ -158,157 +158,157 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 	}
 
 	public long getNumerator(long denominator) {
-		return this.numerator * (denominator / this.denominator);
+		return numerator * (denominator / this.denominator);
 	}
 
 	public long getNumerator() {
-		return this.numerator;
+		return numerator;
 	}
 
 	public boolean divisible(Fraction fraction) {
-		return this.divide(fraction).getDenominator() == 1;
+		return divide(fraction).getDenominator() == 1;
 	}
 
 	public long getDenominator() {
-		return this.denominator;
+		return denominator;
 	}
 
 	public Fraction divide(Fraction other) {
-		return this.multiply(other.inverse());
+		return multiply(other.inverse());
 	}
 
 	public Fraction multiply(Fraction other) {
-		long gcd1 = LongMath.gcd(Math.abs(this.numerator), other.denominator);
-		long gcd2 = LongMath.gcd(this.denominator, Math.abs(other.numerator));
+		long gcd1 = LongMath.gcd(Math.abs(numerator), other.denominator);
+		long gcd2 = LongMath.gcd(denominator, Math.abs(other.numerator));
 		// guaranteed simplified
-		return new Fraction(this.signum() * other.signum() * (this.numerator / gcd1) * (other.numerator / gcd2), (this.denominator / gcd2) * (other.denominator / gcd1));
+		return new Fraction(signum() * other.signum() * (numerator / gcd1) * (other.numerator / gcd2), (denominator / gcd2) * (other.denominator / gcd1));
 	}
 
 	public Fraction inverse() throws ArithmeticException {
 		// don't need to simplify
-		switch (this.signum()) {
+		switch (signum()) {
 		case 1:
-			return new Fraction(this.denominator, this.numerator);
+			return new Fraction(denominator, numerator);
 		case -1:
-			return new Fraction(-this.denominator, -this.numerator);
+			return new Fraction(-denominator, -numerator);
 		default:
 			throw new ArithmeticException("Cannot invert zero fraction!");
 		}
 	}
 
 	public int signum() {
-		return Long.signum(this.numerator);
+		return Long.signum(numerator);
 	}
 
 	public Fraction floorNearest(Fraction fraction) {
-		return fraction.multiply(ofWhole(this.floorDiv(fraction)));
+		return fraction.multiply(ofWhole(floorDiv(fraction)));
 	}
 
 	public long floorDiv(Fraction fraction) {
-		return Math.floorDiv(this.numerator * fraction.denominator, fraction.numerator * this.denominator);
+		return Math.floorDiv(numerator * fraction.denominator, fraction.numerator * denominator);
 	}
 
 	public boolean isNegative() {
-		return this.numerator < 0;
+		return numerator < 0;
 	}
 
 	public boolean isPositive() {
-		return this.numerator > 0;
+		return numerator > 0;
 	}
 
 	@Override
 	public double doubleValue() {
-		return ((double) this.numerator) / this.denominator;
+		return ((double) numerator) / denominator;
 	}
 
 	public Fraction negate() {
 		// don't need to simplify
-		return new Fraction(-this.numerator, this.denominator);
+		return new Fraction(-numerator, denominator);
 	}
 
 	public Fraction multiply(long amount) {
-		return of(this.numerator * amount, this.denominator);
+		return of(numerator * amount, denominator);
 	}
 
 	public Fraction add(Fraction other) {
-		long commonMultiple = lcm(this.denominator, other.denominator);
-		long leftNumerator = commonMultiple / this.denominator * this.numerator;
+		long commonMultiple = lcm(denominator, other.denominator);
+		long leftNumerator = commonMultiple / denominator * numerator;
 		long rightNumerator = commonMultiple / other.denominator * other.numerator;
 		return ofValidDenominator(leftNumerator + rightNumerator, commonMultiple);
 	}
 
 	public Fraction subtract(Fraction other) {
-		long commonMultiple = lcm(this.denominator, other.denominator);
-		long leftNumerator = commonMultiple / this.denominator * this.numerator;
+		long commonMultiple = lcm(denominator, other.denominator);
+		long leftNumerator = commonMultiple / denominator * numerator;
 		long rightNumerator = commonMultiple / other.denominator * other.numerator;
 		return ofValidDenominator(leftNumerator - rightNumerator, commonMultiple);
 	}
 
 	public Fraction floorWithDenominator(long denominator) {
 		Preconditions.checkArgument(denominator > 0, "New denominator must be positive!");
-		if (denominator == this.getDenominator()) return this;
-		return Fraction.ofValidDenominator(Math.floorDiv(this.numerator * denominator, this.denominator), denominator);
+		if (denominator == getDenominator()) return this;
+		return Fraction.ofValidDenominator(Math.floorDiv(numerator * denominator, denominator), denominator);
 	}
 
 	public boolean isGreaterThan(Fraction fraction) {
-		return this.compareTo(fraction) > 0;
+		return compareTo(fraction) > 0;
 	}
 
 	@Override
 	public int compareTo(Fraction other) {
-		long leftNum = this.numerator * other.denominator;
-		long rightNum = other.numerator * this.denominator;
+		long leftNum = numerator * other.denominator;
+		long rightNum = other.numerator * denominator;
 		return Long.compare(leftNum, rightNum);
 	}
 
 	public boolean isGreaterThanOrEqualTo(Fraction fraction) {
-		return this.compareTo(fraction) >= 0;
+		return compareTo(fraction) >= 0;
 	}
 
 	@Override
 	public int hashCode() {
-		int result = (int) (this.numerator ^ (this.numerator >>> 32));
-		result = 31 * result + (int) (this.denominator ^ (this.denominator >>> 32));
+		int result = (int) (numerator ^ (numerator >>> 32));
+		result = 31 * result + (int) (denominator ^ (denominator >>> 32));
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
-		if (o == null || this.getClass() != o.getClass()) return false;
+		if (o == null || getClass() != o.getClass()) return false;
 		Fraction fraction = (Fraction) o;
-		return this.numerator == fraction.numerator && this.denominator == fraction.denominator;
+		return numerator == fraction.numerator && denominator == fraction.denominator;
 	}
 
 	@Override
 	public String toString() {
-		long whole = this.numerator / this.denominator;
-		long part = this.numerator % this.denominator;
-		return whole + " " + part + "/" + this.denominator;
+		long whole = numerator / denominator;
+		long part = numerator % denominator;
+		return whole + " " + part + "/" + denominator;
 	}
 
 	public void toTag(CompoundTag tag) {
-		tag.putLong("numerator", this.numerator);
-		tag.putLong("denominator", this.denominator);
+		tag.putLong("numerator", numerator);
+		tag.putLong("denominator", denominator);
 	}
 
 	@Override
 	public int intValue() {
-		return (int) this.longValue();
+		return (int) longValue();
 	}
 
 	@Override
 	public <T> T serialize(DynamicOps<T> ops) {
-		return ops.createLongList(LongStream.of(this.numerator, this.denominator));
+		return ops.createLongList(LongStream.of(numerator, denominator));
 	}
 
 	@Override
 	public long longValue() {
-		return (int) (this.numerator / this.denominator);
+		return (int) (numerator / denominator);
 	}
 
 	@Override
 	public float floatValue() {
-		return (float) this.doubleValue();
+		return (float) doubleValue();
 	}
 }

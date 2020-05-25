@@ -1,10 +1,15 @@
 package io.github.fablabsmc.fablabs.api.fluid.v1.properties;
 
+import java.util.List;
+
 import io.github.fablabsmc.fablabs.api.fluid.v1.math.Fraction;
 
 import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.Tag;
 import net.minecraft.text.Text;
+
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 /**
  * A property of a fluid that is stored in NBT.
@@ -34,5 +39,11 @@ public interface FluidProperty<T extends Tag> {
 	 */
 	boolean areCompatible(Fluid fluid, T aData, T bData);
 
-	Text toText(T data);
+	/**
+	 * Get the tooltip text for this property.
+	 * @param data The tag value of this property.
+	 * @return A list (can be a {@link java.util.Collections#singletonList} of text entries to add, or an empty list if no tooltip should be added.
+	 */
+	@Environment(EnvType.CLIENT)
+	List<Text> getTooltipText(T data);
 }

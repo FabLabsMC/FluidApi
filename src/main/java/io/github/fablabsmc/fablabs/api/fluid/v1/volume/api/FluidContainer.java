@@ -19,7 +19,7 @@ public interface FluidContainer {
 	 * @return the amount of fluid not merged
 	 */
 	default Fraction mergeLeftover(FluidVolume container) {
-		return container.amount.subtract(this.merge(container));
+		return container.amount.subtract(merge(container));
 	}
 
 	/**
