@@ -247,7 +247,7 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 	public Fraction floorWithDenominator(long denominator) {
 		Preconditions.checkArgument(denominator > 0, "New denominator must be positive!");
 		if (denominator == getDenominator()) return this;
-		return Fraction.ofValidDenominator(Math.floorDiv(numerator * denominator, denominator), denominator);
+		return Fraction.ofValidDenominator(Math.floorDiv(numerator * denominator, this.denominator), denominator);
 	}
 
 	public boolean isGreaterThan(Fraction fraction) {
