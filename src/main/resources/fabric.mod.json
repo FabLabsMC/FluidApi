@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "id": "${id}",
   "version": "${version}",
-
   "name": "FabLabs ${libname} version ${libver}",
   "icon": "assets/${id}/icon.png",
   "description": "Fluid stack reference implementation for Fabric API",
@@ -10,6 +9,9 @@
   "contact": {
     "sources": "https://github.com/${repo}"
   },
+  "mixins": [
+    "fabric.fluids.mixin.json"
+  ],
   "environment": "*",
   "depends": {
     "fabricloader": ">=0.4.0"
