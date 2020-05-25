@@ -36,5 +36,4 @@ public class PotionFluidProperty implements FluidProperty<StringTag> {
 	public List<Text> getTooltipText(StringTag data) {
 		return Collections.singletonList(new TranslatableText(Util.createTranslationKey("potion", new Identifier(data.asString()))).formatted(Formatting.GRAY));
 	}
-
 }

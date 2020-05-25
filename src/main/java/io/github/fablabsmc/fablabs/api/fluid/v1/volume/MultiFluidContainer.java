@@ -153,6 +153,7 @@ public class MultiFluidContainer extends AbstractCollection<FluidContainer> impl
 		for (FluidContainer container : this) {
 			if (!container.isEmpty()) return false;
 		}
+
 		return true;
 	}
 
