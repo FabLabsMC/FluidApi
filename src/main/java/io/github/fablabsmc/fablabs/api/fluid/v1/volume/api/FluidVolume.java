@@ -8,10 +8,12 @@ import java.util.List;
 import java.util.Objects;
 
 import com.google.common.collect.Iterators;
+import io.github.fablabsmc.fablabs.api.fluid.v1.event.client.FluidTooltipCallback;
 import io.github.fablabsmc.fablabs.api.fluid.v1.math.Fraction;
 import io.github.fablabsmc.fablabs.api.fluid.v1.properties.FluidPropertyManager;
 import io.github.fablabsmc.fablabs.api.fluid.v1.volume.ImmutableFluidVolume;
 
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.CompoundTag;
@@ -201,12 +203,13 @@ public class FluidVolume extends AbstractCollection<FluidContainer> implements F
 		return "FluidVolume{" + "fluid=" + fluid + ", amount=" + amount + ", tag=" + tag + '}';
 	}
 
-	//TODO: FluidTooltipCallback? Just having properties should be fine, right?
 	@Environment(EnvType.CLIENT)
-	public List<Text> getTooltip() {
+	public List<Text> getTooltip(TooltipContext context) {
 		List<Text> tooltip = new ArrayList<>();
 		tooltip.add(new TranslatableText(Util.createTranslationKey("fluid", Registry.FLUID.getId(fluid))));
 		tooltip.add(new TranslatableText("text.fluid.amount", amount.toString()).formatted(Formatting.GRAY));
+		tooltip.add(new LiteralText("")); //blank line
+		FluidTooltipCallback.EVENT.invoker().getTooltip(this, context, tooltip);
 		tooltip.add(new LiteralText("")); //blank line
 		tooltip.addAll(FluidPropertyManager.INSTANCE.getPropertyTooltip(tag));
 		return tooltip;
@@ -216,7 +219,7 @@ public class FluidVolume extends AbstractCollection<FluidContainer> implements F
 		String key = tag.getString("fluid");
 		fluid = Registry.FLUID.get(Identifier.tryParse(key));
 		amount = Fraction.fromTag(tag);
-		tag = tag.getCompound("tag");
+		this.tag = tag.getCompound("tag");
 	}
 
 	public final void toTag(CompoundTag tag) {
