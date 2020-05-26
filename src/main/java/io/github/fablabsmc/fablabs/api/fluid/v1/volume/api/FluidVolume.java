@@ -211,7 +211,7 @@ public class FluidVolume extends AbstractCollection<FluidContainer> implements F
 		tooltip.add(new LiteralText("")); //blank line
 		FluidTooltipCallback.EVENT.invoker().getTooltip(this, context, tooltip);
 		tooltip.add(new LiteralText("")); //blank line
-		tooltip.addAll(FluidPropertyManager.INSTANCE.getPropertyTooltip(tag));
+		tooltip.addAll(FluidPropertyManager.INSTANCE.getPropertyTooltip(tag, context));
 		return tooltip;
 	}
 

@@ -9,6 +9,7 @@ import io.github.fablabsmc.fablabs.api.fluid.v1.math.Fraction;
 import io.github.fablabsmc.fablabs.api.fluid.v1.properties.potions.CustomPotionColorProperty;
 import io.github.fablabsmc.fablabs.api.fluid.v1.properties.potions.PotionFluidProperty;
 
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -110,12 +111,12 @@ public class FluidPropertyManager {
 
 	@Environment(EnvType.CLIENT)
 	@SuppressWarnings("unchecked")
-	public <T extends Tag> List<Text> getPropertyTooltip(CompoundTag tag) {
+	public <T extends Tag> List<Text> getPropertyTooltip(CompoundTag tag, TooltipContext context) {
 		List<Text> tooltip = new ArrayList<>();
 
 		for (String key : tag.getKeys()) {
 			FluidProperty<T> property = (FluidProperty<T>) properties.get(key);
-			tooltip.addAll(property.getTooltipText((T) tag.get(key)));
+			tooltip.addAll(property.getTooltipText((T) tag.get(key), context));
 		}
 
 		return tooltip;
