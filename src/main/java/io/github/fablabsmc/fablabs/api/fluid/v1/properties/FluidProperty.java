@@ -4,6 +4,7 @@ import java.util.List;
 
 import io.github.fablabsmc.fablabs.api.fluid.v1.math.Fraction;
 
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.Tag;
 import net.minecraft.text.Text;
@@ -45,5 +46,5 @@ public interface FluidProperty<T extends Tag> {
 	 * @return A list (can be a {@link java.util.Collections#singletonList} of text entries to add, or an empty list if no tooltip should be added.
 	 */
 	@Environment(EnvType.CLIENT)
-	List<Text> getTooltipText(T data);
+	List<Text> getTooltipText(T data, TooltipContext context);
 }

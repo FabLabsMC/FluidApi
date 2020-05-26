@@ -8,6 +8,7 @@ import io.github.fablabsmc.fablabs.api.fluid.v1.properties.FluidProperty;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -54,7 +55,7 @@ public class CustomPotionEffectsFluidProperty implements FluidProperty<ListTag> 
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public List<Text> getTooltipText(ListTag data) {
+	public List<Text> getTooltipText(ListTag data, TooltipContext context) {
 		//TODO: I think this is the best way to do it without just duping the vanilla code?
 		ItemStack stack = new ItemStack(Items.POTION);
 		stack.getOrCreateTag().put("CustomPotionEffects", data);

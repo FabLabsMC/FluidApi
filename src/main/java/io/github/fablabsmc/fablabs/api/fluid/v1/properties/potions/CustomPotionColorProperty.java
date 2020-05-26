@@ -6,9 +6,12 @@ import java.util.List;
 import io.github.fablabsmc.fablabs.api.fluid.v1.math.Fraction;
 import io.github.fablabsmc.fablabs.api.fluid.v1.properties.FluidProperty;
 
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -26,9 +29,8 @@ public class CustomPotionColorProperty implements FluidProperty<IntTag> {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public List<Text> getTooltipText(IntTag data) {
-		//TODO: should this be put in the tooltip?
-		//return Collections.singletonList(new TranslatableText("text.potion.color", Integer.toHexString(data.getInt())).formatted(Formatting.GRAY));
+	public List<Text> getTooltipText(IntTag data, TooltipContext context) {
+		if (context.isAdvanced()) return Collections.singletonList(new TranslatableText("text.potion.color", Integer.toHexString(data.getInt())).formatted(Formatting.GRAY));
 		return Collections.emptyList();
 	}
 

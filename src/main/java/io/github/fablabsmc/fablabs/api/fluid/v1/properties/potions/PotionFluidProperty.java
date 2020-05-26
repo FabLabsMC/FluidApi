@@ -6,6 +6,7 @@ import java.util.List;
 import io.github.fablabsmc.fablabs.api.fluid.v1.math.Fraction;
 import io.github.fablabsmc.fablabs.api.fluid.v1.properties.FluidProperty;
 
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.text.Text;
@@ -33,7 +34,7 @@ public class PotionFluidProperty implements FluidProperty<StringTag> {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public List<Text> getTooltipText(StringTag data) {
+	public List<Text> getTooltipText(StringTag data, TooltipContext context) {
 		return Collections.singletonList(new TranslatableText(Util.createTranslationKey("potion", new Identifier(data.asString()))).formatted(Formatting.GRAY));
 	}
 }
