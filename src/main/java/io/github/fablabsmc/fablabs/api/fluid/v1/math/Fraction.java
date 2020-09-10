@@ -294,6 +294,10 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 		return (float) doubleValue();
 	}
 
+	public MixedNumber mixedNumber() {
+		return MixedNumber.of(0, numerator, denominator);
+	}
+
 	@Override
 	public <T> T serialize(DynamicOps<T> ops) {
 		final Map<T, T> value = new HashMap<>();
