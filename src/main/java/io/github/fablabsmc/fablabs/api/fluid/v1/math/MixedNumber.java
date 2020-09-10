@@ -1,19 +1,18 @@
 package io.github.fablabsmc.fablabs.api.fluid.v1.math;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
-import com.google.common.math.LongMath;
+import com.google.common.math.IntMath;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
-
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.DynamicSerializable;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- * a number whose value is represented as 3 longs, a whole, numerator and denominator.
+ * a number whose value is represented as 3 ints, a whole, numerator and denominator.
  *
  * <p>This object is immutable and self-simplifies on instantiation.
  */
@@ -21,17 +20,17 @@ public final class MixedNumber extends Number implements Comparable<MixedNumber>
 	public static final MixedNumber ZERO = new MixedNumber(0, 0, 1);
 	public static final MixedNumber ONE = new MixedNumber(1, 0, 1);
 
-	private final long whole;
-	private final long numerator;
-	private final /*Positive*/ long denominator;
+	private final int whole;
+	private final int numerator;
+	private final /*Positive*/ int denominator;
 
 	/**
 	 * Should be only called if denominator is positive and numerator & denominator are coprime.
 	 */
-	private MixedNumber(long whole, long numerator, long denominator) {
+	private MixedNumber(int whole, int numerator, int denominator) {
 		if (denominator <= 0) throw new ArithmeticException("denominator cannot be less than or equal to 0");
 
-		if (LongMath.gcd(Math.abs(numerator), denominator) != 1) {
+		if (IntMath.gcd(Math.abs(numerator), denominator) != 1) {
 			throw new ArithmeticException("mixed number not simplified!");
 		}
 
@@ -41,40 +40,40 @@ public final class MixedNumber extends Number implements Comparable<MixedNumber>
 	}
 
 	public static MixedNumber fromTag(CompoundTag tag) {
-		return of(tag.getLong("whole"), tag.getLong("numerator"), tag.getLong("denominator"));
+		return of(tag.getInt("whole"), tag.getInt("numerator"), tag.getInt("denominator"));
 	}
 
-	public static MixedNumber of(long whole, long numerator, long denominator) {
+	public static MixedNumber of(int whole, int numerator, int denominator) {
 		if (denominator == 0) throw new ArithmeticException("Zero denominator");
 		return denominator < 0 ? ofValidDenominator(whole, -numerator, -denominator) : ofValidDenominator(whole, numerator, denominator);
 	}
 
 	//TODO: What shortcuts should we have, and how should we name them? This is in a Minecraft context, after all.
-	public static MixedNumber ofWhole(long numerator) {
+	public static MixedNumber ofWhole(int numerator) {
 		if (numerator == 0) return ZERO;
 		if (numerator == 1) return ONE;
 		return new MixedNumber(0, numerator, 1);
 	}
 
-	public static MixedNumber ofThirds(long numerator) {
+	public static MixedNumber ofThirds(int numerator) {
 		return ofValidDenominator(0, numerator, 3);
 	}
 
-	public static MixedNumber ofNinths(long numerator) {
+	public static MixedNumber ofNinths(int numerator) {
 		return ofValidDenominator(0, numerator, 9);
 	}
 
-	public static MixedNumber ofThousandths(long numerator) {
+	public static MixedNumber ofThousandths(int numerator) {
 		return ofValidDenominator(0, numerator, 1000);
 	}
 
 	// should be only called if denom is positive
 	@VisibleForTesting
-	public static MixedNumber ofValidDenominator(long whole, long numerator, long denominator) {
+	public static MixedNumber ofValidDenominator(int whole, int numerator, int denominator) {
 		if (numerator == 0) return ZERO;
 		if (numerator == denominator) return ONE;
 
-		long gcd = LongMath.gcd(Math.abs(numerator), denominator);
+		int gcd = IntMath.gcd(Math.abs(numerator), denominator);
 
 		return new MixedNumber(whole, numerator / gcd, denominator / gcd);
 	}
@@ -84,19 +83,19 @@ public final class MixedNumber extends Number implements Comparable<MixedNumber>
 		if ((len = addends.length) == 0) return ZERO;
 		MixedNumber first = addends[0];
 
-		long denominator = first.denominator;
+		int denominator = first.denominator;
 
 		for (int i = 1; i < len; i++) {
 			denominator = lcm(denominator, addends[i].denominator);
 		}
 
-		long numerator = 0;
+		int numerator = 0;
 
 		for (MixedNumber addend : addends) {
 			numerator += denominator / addend.denominator * addend.numerator;
 		}
 
-		long whole = first.whole;
+		int whole = first.whole;
 
 		while (numerator >= denominator) {
 			numerator -= denominator;
@@ -115,24 +114,24 @@ public final class MixedNumber extends Number implements Comparable<MixedNumber>
 		if ((len = factors.length) == 0) return ONE;
 
 		MixedNumber first = factors[0];
-		long signum;
+		int signum;
 		if ((signum = first.signum()) == 0) return ZERO; // shortcut
-		long whole = first.whole;
-		long denominator = first.denominator;
-		long numerator = Math.abs(first.numerator + whole * denominator);
+		int whole = first.whole;
+		int denominator = first.denominator;
+		int numerator = Math.abs(first.numerator + whole * denominator);
 
 		for (int i = 1; i < len; i++) {
 			MixedNumber factor = factors[i];
 			whole *= factor.whole;
 			signum *= factor.signum();
 			if (signum == 0) return ZERO; // shortcut
-			long factorDenom = factor.denominator;
-			long factorNum = Math.abs(factor.numerator);
-			long gcd1 = LongMath.gcd(numerator, factorDenom);
-			long gcd2 = LongMath.gcd(denominator, factorNum);
+			int factorDenom = factor.denominator;
+			int factorNum = Math.abs(factor.numerator);
+			int gcd1 = IntMath.gcd(numerator, factorDenom);
+			int gcd2 = IntMath.gcd(denominator, factorNum);
 			numerator = (numerator / gcd1) * (factorNum / gcd2);
 			denominator = (denominator / gcd2) * (factorDenom / gcd1);
-			assert LongMath.gcd(numerator, denominator) == 1;
+			assert IntMath.gcd(numerator, denominator) == 1;
 		}
 
 		// should be simplified by here
@@ -143,8 +142,8 @@ public final class MixedNumber extends Number implements Comparable<MixedNumber>
 		return dividend.divide(divisor);
 	}
 
-	private static long lcm(long a, long b) {
-		return a / LongMath.gcd(a, b) * b; // divide first to prevent overflow
+	private static int lcm(int a, int b) {
+		return a / IntMath.gcd(a, b) * b; // divide first to prevent overflow
 	}
 
 	public static MixedNumber max(MixedNumber left, MixedNumber right) {
@@ -155,11 +154,11 @@ public final class MixedNumber extends Number implements Comparable<MixedNumber>
 		return left.compareTo(right) < 0 ? left : right;
 	}
 
-	public long getNumerator(long denominator) {
+	public int getNumerator(int denominator) {
 		return numerator * (denominator / this.denominator);
 	}
 
-	public long getNumerator() {
+	public int getNumerator() {
 		return numerator;
 	}
 
@@ -167,7 +166,7 @@ public final class MixedNumber extends Number implements Comparable<MixedNumber>
 		return divide(other).getDenominator() == 1;
 	}
 
-	public long getDenominator() {
+	public int getDenominator() {
 		return denominator;
 	}
 
@@ -176,9 +175,9 @@ public final class MixedNumber extends Number implements Comparable<MixedNumber>
 	}
 
 	public MixedNumber multiply(MixedNumber other) {
-		long whole = this.whole * other.whole;
-		long gcd1 = LongMath.gcd(Math.abs(numerator), other.denominator);
-		long gcd2 = LongMath.gcd(denominator, Math.abs(other.numerator));
+		int whole = this.whole * other.whole;
+		int gcd1 = IntMath.gcd(Math.abs(numerator), other.denominator);
+		int gcd2 = IntMath.gcd(denominator, Math.abs(other.numerator));
 		return new MixedNumber(whole,signum() * other.signum() * (numerator / gcd1) * (other.numerator / gcd2), (denominator / gcd2) * (other.denominator / gcd1)).simplify();
 	}
 
@@ -202,8 +201,8 @@ public final class MixedNumber extends Number implements Comparable<MixedNumber>
 		return other.multiply(ofWhole(floorDiv(other)));
 	}
 
-	public long floorDiv(MixedNumber other) {
-		return this.divide(other).longValue();
+	public int floorDiv(MixedNumber other) {
+		return this.divide(other).intValue();
 	}
 
 	public boolean isNegative() {
@@ -220,8 +219,8 @@ public final class MixedNumber extends Number implements Comparable<MixedNumber>
 	}
 
 	public MixedNumber simplify() {
-		long whole = -this.whole;
-		long numerator = -this.numerator;
+		int whole = -this.whole;
+		int numerator = -this.numerator;
 		if (numerator < 0) {
 			while (numerator < 0 && whole > 0) {
 				--whole;
@@ -233,7 +232,7 @@ public final class MixedNumber extends Number implements Comparable<MixedNumber>
 				numerator -= this.denominator;
 			}
 		}
-		long lcm = lcm(numerator, this.denominator);
+		int lcm = lcm(numerator, this.denominator);
 		return of(whole, numerator / lcm, this.denominator / lcm);
 	}
 
@@ -241,25 +240,25 @@ public final class MixedNumber extends Number implements Comparable<MixedNumber>
 		return of(-whole, -numerator, this.denominator).simplify();
 	}
 
-	public MixedNumber multiply(long amount) {
+	public MixedNumber multiply(int amount) {
 		return of(whole * amount, numerator * amount, this.denominator).simplify();
 	}
 
 	public MixedNumber add(MixedNumber other) {
-		long commonMultiple = lcm(denominator, other.denominator);
-		long leftNumerator = commonMultiple / denominator * numerator;
-		long rightNumerator = commonMultiple / other.denominator * other.numerator;
+		int commonMultiple = lcm(denominator, other.denominator);
+		int leftNumerator = commonMultiple / denominator * numerator;
+		int rightNumerator = commonMultiple / other.denominator * other.numerator;
 		return ofValidDenominator(whole + other.whole, leftNumerator + rightNumerator, commonMultiple).simplify();
 	}
 
 	public MixedNumber subtract(MixedNumber other) {
-		long commonMultiple = lcm(denominator, other.denominator);
-		long leftNumerator = commonMultiple / denominator * numerator;
-		long rightNumerator = commonMultiple / other.denominator * other.numerator;
+		int commonMultiple = lcm(denominator, other.denominator);
+		int leftNumerator = commonMultiple / denominator * numerator;
+		int rightNumerator = commonMultiple / other.denominator * other.numerator;
 		return ofValidDenominator(whole - other.whole, leftNumerator - rightNumerator, commonMultiple).simplify();
 	}
 
-	public MixedNumber floorWithDenominator(long denominator) {
+	public MixedNumber floorWithDenominator(int denominator) {
 		Preconditions.checkArgument(denominator > 0, "New denominator must be positive!");
 		if (denominator == getDenominator()) return this;
 		return MixedNumber.ofValidDenominator(whole, Math.floorDiv(numerator * denominator, this.denominator), denominator);
@@ -271,8 +270,8 @@ public final class MixedNumber extends Number implements Comparable<MixedNumber>
 
 	@Override
 	public int compareTo(MixedNumber other) {
-		long leftNum = (whole * denominator + numerator) * other.denominator;
-		long rightNum = (other.whole * other.denominator + other.numerator) * denominator;
+		int leftNum = (whole * denominator + numerator) * other.denominator;
+		int rightNum = (other.whole * other.denominator + other.numerator) * denominator;
 		return Long.compare(leftNum, rightNum);
 	}
 
@@ -313,7 +312,7 @@ public final class MixedNumber extends Number implements Comparable<MixedNumber>
 
 	@Override
 	public long longValue() {
-		return (int) ((whole * denominator + numerator) / denominator);
+		return (whole * denominator + numerator) / denominator;
 	}
 
 	@Override
@@ -336,9 +335,9 @@ public final class MixedNumber extends Number implements Comparable<MixedNumber>
 	}
 
 	public static <T> MixedNumber deserialize(Dynamic<T> dynamic) {
-		final long whole = dynamic.get("whole").asLong(1);
-		final long numerator = dynamic.get("numerator").asLong(0);
-		final long denominator = dynamic.get("denominator").asLong(1);
+		final int whole = dynamic.get("whole").asInt(1);
+		final int numerator = dynamic.get("numerator").asInt(0);
+		final int denominator = dynamic.get("denominator").asInt(1);
 
 		return of(whole, numerator, denominator);
 	}
