@@ -335,7 +335,7 @@ public final class MixedNumber extends Number implements Comparable<MixedNumber>
 	}
 
 	public static <T> MixedNumber deserialize(Dynamic<T> dynamic) {
-		final int whole = dynamic.get("whole").asInt(1);
+		final int whole = dynamic.get("whole").asInt(0);
 		final int numerator = dynamic.get("numerator").asInt(0);
 		final int denominator = dynamic.get("denominator").asInt(1);
 
