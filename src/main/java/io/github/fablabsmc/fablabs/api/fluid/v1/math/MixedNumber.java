@@ -234,7 +234,7 @@ public final class MixedNumber extends Number implements Comparable<MixedNumber>
 			}
 		}
 		int gcd = gcd(Math.abs(numerator), denominator);
-		return of(whole, numerator / gcd, this.denominator / gcd);
+		return new MixedNumber(whole, numerator / gcd, this.denominator / gcd);
 	}
 
 	public MixedNumber negate() {
