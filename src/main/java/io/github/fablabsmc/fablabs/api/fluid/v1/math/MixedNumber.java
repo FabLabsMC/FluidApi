@@ -72,16 +72,23 @@ public final class MixedNumber extends Number implements Comparable<MixedNumber>
 	@VisibleForTesting
 	public static MixedNumber ofValidDenominator(int whole, int numerator, int denominator) {
 		if (numerator == 0) return new MixedNumber(whole, 0, 1);
-		if (numerator == denominator) return new MixedNumber(whole + 1, 0, 1);
-
 		int gcd = gcd(Math.abs(numerator), denominator);
+
+		int newWhole = whole;
+		int newmerator = numerator;
+		while (newmerator >= denominator) {
+			--newWhole;
+			newmerator -= denominator;
+		}
+
+		gcd = gcd(Math.abs(newmerator), denominator);
 
 		return new MixedNumber(whole, numerator / gcd, denominator / gcd);
 	}
 
 	public static MixedNumber add(MixedNumber... addends) {
-		final int len;
-		if ((len = addends.length) == 0) return ZERO;
+		final int len = addends.length;
+		if (len == 0) return ZERO;
 		MixedNumber first = addends[0];
 
 		int denominator = first.denominator;
@@ -298,7 +305,8 @@ public final class MixedNumber extends Number implements Comparable<MixedNumber>
 
 	@Override
 	public String toString() {
-		return whole + " " + numerator + "/" + denominator;
+		MixedNumber simplified = (numerator >= denominator || numerator < 0) ? this.simplify() : this;
+		return simplified.whole + " " + simplified.numerator + "/" + simplified.denominator;
 	}
 
 	public void toTag(CompoundTag tag) {
