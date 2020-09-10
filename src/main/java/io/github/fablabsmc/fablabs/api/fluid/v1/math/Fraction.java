@@ -307,7 +307,7 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 				numerator -= denominator;
 			}
 		}
-		return MixedNumber.of(0, (int) numerator, (int) denominator);
+		return MixedNumber.of(whole, (int) numerator, (int) denominator);
 	}
 
 	@Override
