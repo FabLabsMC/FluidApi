@@ -294,6 +294,19 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 	}
 
 	public MixedNumber mixedNumber() {
+		int whole = 0;
+		long numerator = this.numerator;
+		if (numerator < 0) {
+			while (numerator < 0) {
+				--whole;
+				numerator += denominator;
+			}
+		} else {
+			while (numerator > denominator) {
+				++whole;
+				numerator -= denominator;
+			}
+		}
 		return MixedNumber.of(0, (int) numerator, (int) denominator);
 	}
 
