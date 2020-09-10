@@ -1,16 +1,15 @@
 package io.github.fablabsmc.fablabs.api.fluid.v1.math;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.math.LongMath;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
-
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.DynamicSerializable;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * a number whose value is represented as 2 long, a numerator and denominator.
@@ -295,7 +294,7 @@ public final class Fraction extends Number implements Comparable<Fraction>, Dyna
 	}
 
 	public MixedNumber mixedNumber() {
-		return MixedNumber.of(0, numerator, denominator);
+		return MixedNumber.of(0, (int) numerator, (int) denominator);
 	}
 
 	@Override
